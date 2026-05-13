@@ -1,0 +1,116 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply font-sans antialiased;
+  background: #100f18;
+  color: rgba(255, 255, 255, 0.88);
+  overflow: hidden;
+}
+
+.react-flow,
+.react-flow__pane,
+.react-flow__background {
+  background: transparent !important;
+}
+
+@keyframes drift-1 {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(60px, 40px); }
+  50% { transform: translate(-30px, 80px); }
+  75% { transform: translate(-70px, 20px); }
+}
+
+@keyframes drift-2 {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(-50px, -40px); }
+  50% { transform: translate(40px, -70px); }
+  75% { transform: translate(60px, 30px); }
+}
+
+@keyframes drift-3 {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(40px, -50px); }
+  50% { transform: translate(-60px, -20px); }
+  75% { transform: translate(20px, 60px); }
+}
+
+.animate-drift-1 {
+  animation: drift-1 25s ease-in-out infinite;
+}
+
+.animate-drift-2 {
+  animation: drift-2 30s ease-in-out infinite;
+}
+
+.animate-drift-3 {
+  animation: drift-3 20s ease-in-out infinite;
+}
+
+.hide-scroll {
+  &::-webkit-scrollbar {
+    display: none !important;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none !important;
+}
+
+.editor-wrapper {
+  .cm-editor {
+    height: 100%;
+    font-size: 13px;
+    background: transparent;
+
+    &.cm-focused {
+      outline: none;
+    }
+
+    .cm-gutters {
+      border-right: none;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.2);
+      padding-right: 4px;
+    }
+
+    .cm-activeLineGutter {
+      background: transparent;
+      color: rgba(255, 255, 255, 0.45);
+    }
+
+    .cm-activeLine {
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .cm-selectionBackground {
+      background: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .cm-cursor {
+      border-left-color: #fff;
+      border-left-width: 1.5px;
+    }
+
+    .cm-content {
+      color: rgba(255, 255, 255, 0.88);
+      caret-color: #fff;
+    }
+
+    .cm-placeholder {
+      color: rgba(255, 255, 255, 0.22);
+    }
+
+    .cm-line {
+      color: rgba(255, 255, 255, 0.88);
+    }
+
+    .cm-matchingBracket {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+
+    .cm-foldGutter {
+      color: rgba(255, 255, 255, 0.2);
+    }
+  }
+}
