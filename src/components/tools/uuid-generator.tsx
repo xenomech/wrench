@@ -155,7 +155,7 @@ export function UuidGenerator() {
               onClick={(e) => { e.stopPropagation(); copyOne(current, 0); }}
               className="flex items-center gap-1.5 text-xs text-white/25 transition-colors duration-150 hover:text-white/50"
             >
-              {copiedIndex === 0 ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+              {copiedIndex === 0 ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
               {copiedIndex === 0 ? 'Copied' : 'Copy'}
             </button>
           </div>
@@ -172,29 +172,23 @@ export function UuidGenerator() {
         </div>
       </div>
 
-      <div className="h-[120px] w-full max-w-lg shrink-0 pb-4 md:h-[160px]">
+      <div className="w-full max-w-lg shrink-0 pb-2 md:pb-4">
         {history.length > 0 && (
           <>
-            <p className="mb-2 text-center text-[10px] uppercase tracking-widest text-white/15">
+            <p className="mb-1 text-center text-[10px] uppercase tracking-widest text-white/15 md:mb-2">
               Previous
             </p>
-            <div className="flex flex-col items-center gap-1">
+            <div className="flex flex-col items-center">
               {history.map((uuid, i) => (
                 <div
                   key={uuid}
-                  className="group flex items-center gap-3 rounded-lg px-3 py-1.5 hover:bg-white/[0.03]"
+                  onClick={() => copyOne(uuid, i + 1)}
+                  className="group relative cursor-pointer rounded-lg px-3 py-1 hover:bg-white/[0.03] md:py-1.5"
                 >
                   <span className="font-code text-[10px] text-white/30 md:text-xs">{uuid}</span>
-                  <button
-                    onClick={() => copyOne(uuid, i + 1)}
-                    className="text-white/0 transition-colors duration-150 hover:!text-white/50 group-hover:text-white/25"
-                  >
-                    {copiedIndex === i + 1 ? (
-                      <Check className="h-3 w-3" />
-                    ) : (
-                      <Copy className="h-3 w-3" />
-                    )}
-                  </button>
+                  <span className="pointer-events-none absolute -top-7 left-1/2 z-50 -translate-x-1/2 whitespace-nowrap rounded-md bg-white/10 px-2 py-0.5 text-[10px] font-medium text-white/70 opacity-0 backdrop-blur-sm transition-opacity duration-150 group-hover:opacity-100">
+                    {copiedIndex === i + 1 ? 'Copied!' : 'Copy'}
+                  </span>
                 </div>
               ))}
             </div>

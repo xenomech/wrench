@@ -71,7 +71,7 @@ export function MarkdownPreview() {
         </ToolbarButton>
         {hasPreview && (
           <ToolbarButton onClick={handleCopy}>
-            {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+            {copied ? <Check className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
             {copied ? 'Copied HTML' : 'Copy HTML'}
           </ToolbarButton>
         )}

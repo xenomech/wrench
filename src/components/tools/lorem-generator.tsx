@@ -2,8 +2,8 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Copy, Check } from 'lucide-react';
 import { generateWords, generateSentences, generateParagraphs } from '@/lib/lorem';
+import { CopyButton } from '@/components/copy-button';
 
 type Unit = 'words' | 'sentences' | 'paragraphs';
 
@@ -11,8 +11,6 @@ export function LoremGenerator() {
   const [unit, setUnit] = useState<Unit>('sentences');
   const [output, setOutput] = useState('');
   const [generation, setGeneration] = useState(0);
-  const [copied, setCopied] = useState(false);
-
   const generate = useCallback(() => {
     let text = '';
     switch (unit) {
@@ -47,13 +45,6 @@ export function LoremGenerator() {
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [generate]);
-
-  const handleCopy = useCallback(async () => {
-    if (!output) return;
-    await navigator.clipboard.writeText(output);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }, [output]);
 
   const words = output.split(/(\s+)/);
 
@@ -111,13 +102,7 @@ export function LoremGenerator() {
       </div>
 
       <div className="flex flex-col items-center gap-3 pb-4">
-        <button
-          onClick={handleCopy}
-          className="flex items-center gap-1.5 text-xs text-white/25 transition-colors duration-150 hover:text-white/50"
-        >
-          {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-          {copied ? 'Copied' : 'Copy'}
-        </button>
+        <CopyButton text={output} label="Copy" copiedLabel="Copied" size="sm" className="flex items-center gap-1.5 text-xs text-white/25 transition-colors duration-150 hover:text-white/50" />
 
         <motion.p
           className="text-[11px] uppercase tracking-widest text-white/15"

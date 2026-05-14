@@ -3,8 +3,6 @@
 import { useState, useCallback, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Copy,
-  Check,
   Trash2,
   Sparkles,
   Workflow,
@@ -12,6 +10,7 @@ import {
   MoveRight,
   Search,
 } from 'lucide-react';
+import { CopyButton } from '@/components/copy-button';
 import { CodeEditor } from '@/components/code-editor';
 import { FindReplaceBar } from '@/components/find-replace-bar';
 import { useToast } from '@/components/toast';
@@ -38,7 +37,6 @@ export function JsonWorkspace() {
   const [sourceFormat, setSourceFormat] = useState<Format>('json');
   const [indent, setIndent] = useState(2);
   const [activeTab, setActiveTab] = useState<OutputTab>('yaml');
-  const [copied, setCopied] = useState(false);
   const [srcSearchOpen, setSrcSearchOpen] = useState(false);
   const [srcSearchQuery, setSrcSearchQuery] = useState('');
   const [outSearchOpen, setOutSearchOpen] = useState(false);
@@ -109,15 +107,6 @@ export function JsonWorkspace() {
         return { text: null, format: sourceFormat };
     }
   };
-
-  const handleCopy = useCallback(async () => {
-    const { text } = getActiveOutput();
-    if (!text) return;
-    await navigator.clipboard.writeText(text);
-    setCopied(true);
-    toast('success', 'Copied');
-    setTimeout(() => setCopied(false), 2000);
-  }, [activeTab, convertedJson, convertedYaml, convertedToml, toast]);
 
   const handleClear = useCallback(() => {
     setInput('');
@@ -363,13 +352,7 @@ export function JsonWorkspace() {
                   </button>
                 )}
                 {activeTab !== 'flow' && activeOutput && (
-                  <button
-                    onClick={handleCopy}
-                    className="flex items-center gap-1 text-[11px] text-white/25 transition-colors duration-150 hover:text-white/50"
-                  >
-                    {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                    {copied ? 'Copied' : 'Copy'}
-                  </button>
+                  <CopyButton text={activeOutput} label="Copy" copiedLabel="Copied" size="sm" className="flex items-center gap-1 text-[11px] text-white/25 transition-colors duration-150 hover:text-white/50" onCopied={() => toast('success', 'Copied')} />
                 )}
               </div>
             </div>

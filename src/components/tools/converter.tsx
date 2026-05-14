@@ -162,7 +162,7 @@ export function Converter() {
                   onClick={handleCopy}
                   className="flex items-center gap-1 text-[11px] text-white/25 transition-colors duration-150 hover:text-white/50"
                 >
-                  {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                  {copied ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
                   {copied ? 'Copied' : 'Copy'}
                 </button>
               </div>

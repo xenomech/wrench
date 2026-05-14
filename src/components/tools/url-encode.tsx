@@ -2,15 +2,15 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Copy, Check, Trash2, ArrowDown } from 'lucide-react';
+import { Trash2, ArrowDown } from 'lucide-react';
 import { useToast } from '@/components/toast';
+import { CopyButton } from '@/components/copy-button';
 import { SwipeRail } from '@/components/swipe-rail';
 
 export function UrlEncodeTool() {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [lastAction, setLastAction] = useState<'encode' | 'decode' | null>(null);
-  const [copied, setCopied] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const { toast } = useToast();
 
@@ -45,12 +45,6 @@ export function UrlEncodeTool() {
     [handleEncode, handleDecode]
   );
 
-  const handleCopy = useCallback(async () => {
-    if (!output) return;
-    await navigator.clipboard.writeText(output);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }, [output]);
 
   const handleClear = useCallback(() => {
     setInput('');
@@ -142,12 +136,7 @@ export function UrlEncodeTool() {
             </motion.div>
 
             <div className="relative flex-1 rounded-xl bg-black/25 p-4">
-              <button
-                onClick={handleCopy}
-                className="absolute right-3 top-3 text-white/20 transition-colors duration-150 hover:text-white/50"
-              >
-                {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-              </button>
+              <CopyButton text={output} size="md" className="absolute right-3 top-3 text-white/20 transition-colors duration-150 hover:text-white/50" />
               <pre className="font-code whitespace-pre-wrap break-all pr-8 text-sm leading-relaxed text-white/85">
                 {output}
               </pre>

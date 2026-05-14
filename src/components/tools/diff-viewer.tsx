@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trash2, FileCode2, Copy, Check } from 'lucide-react';
 import { diffLines, diffWords, type Change } from 'diff';
@@ -96,6 +96,54 @@ function buildHighlights(changes: Change[], side: 'removed' | 'added'): ReactNod
   return nodes;
 }
 
+function ScrollSyncedPane({
+  value,
+  onChange,
+  placeholder,
+  highlights,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  placeholder: string;
+  highlights: ReactNode[] | null;
+}) {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const ta = textareaRef.current;
+    if (!ta) return;
+    const sync = () => {
+      if (overlayRef.current) overlayRef.current.scrollTop = ta.scrollTop;
+    };
+    ta.addEventListener('scroll', sync);
+    return () => ta.removeEventListener('scroll', sync);
+  }, []);
+
+  return (
+    <div className="relative min-h-0 flex-1">
+      {highlights && (
+        <div
+          ref={overlayRef}
+          aria-hidden
+          className="font-code pointer-events-none absolute inset-0 overflow-hidden whitespace-pre-wrap break-words rounded-xl p-4 text-sm leading-relaxed text-white"
+        >
+          {highlights}
+        </div>
+      )}
+      <textarea
+        ref={textareaRef}
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        placeholder={placeholder}
+        className={`font-code placeholder:text-white/22 relative h-full w-full resize-none rounded-xl bg-black/20 p-4 text-sm leading-relaxed outline-none focus:ring-1 focus:ring-white/10 ${
+          highlights ? 'text-transparent caret-white selection:bg-white/10' : 'text-white/90'
+        }`}
+      />
+    </div>
+  );
+}
+
 function HighlightedPane({
   value,
   onChange,
@@ -114,24 +162,12 @@ function HighlightedPane({
   return (
     <div className="flex min-h-[120px] flex-1 flex-col gap-2 md:min-h-[150px] lg:min-h-[250px]">
       <span className="text-xs font-medium uppercase tracking-wider text-white/35">{label}</span>
-      <div className="relative flex-1">
-        {hasHighlights && (
-          <div
-            aria-hidden
-            className="font-code pointer-events-none absolute inset-0 overflow-hidden whitespace-pre-wrap break-words rounded-xl p-4 text-sm leading-relaxed text-white"
-          >
-            {highlights}
-          </div>
-        )}
-        <textarea
-          value={value}
-          onChange={e => onChange(e.target.value)}
-          placeholder={placeholder}
-          className={`font-code placeholder:text-white/22 relative h-full w-full resize-none rounded-xl bg-black/20 p-4 text-sm leading-relaxed outline-none focus:ring-1 focus:ring-white/10 ${
-            hasHighlights ? 'text-transparent caret-white selection:bg-white/10' : 'text-white/90'
-          }`}
-        />
-      </div>
+      <ScrollSyncedPane
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        highlights={hasHighlights ? highlights : null}
+      />
     </div>
   );
 }
@@ -220,7 +256,7 @@ export function DiffViewer() {
           </ToolbarButton>
           {hasChanges && (
             <ToolbarButton onClick={handleCopy}>
-              {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+              {copied ? <Check className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
               {copied ? 'Copied' : 'Copy Diff'}
             </ToolbarButton>
           )}

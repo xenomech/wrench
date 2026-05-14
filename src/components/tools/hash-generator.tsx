@@ -149,7 +149,7 @@ export function HashGenerator() {
                     className="text-white/20 transition-colors duration-150 hover:text-white/50"
                   >
                     {copiedField === row.key ? (
-                      <Check className="h-3 w-3" />
+                      <Check className="h-3 w-3 text-emerald-400" />
                     ) : (
                       <Copy className="h-3 w-3" />
                     )}

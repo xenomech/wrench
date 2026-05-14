@@ -65,7 +65,7 @@ function JsonBlock({ label, value, color }: { label: string; value: string; colo
           onClick={handleCopy}
           className="text-white/20 transition-colors duration-150 hover:text-white/50"
         >
-          {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+          {copied ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
         </button>
       </div>
       <div className="min-h-[80px] flex-1">
