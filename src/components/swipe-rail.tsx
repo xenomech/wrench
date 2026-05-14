@@ -13,8 +13,8 @@ type SwipeRailProps = {
   disabled?: boolean;
 };
 
-const THUMB = 48;
-const PAD = 6;
+const THUMB = 44;
+const PAD = 5;
 const THRESHOLD = 0.6;
 
 export function SwipeRail({
@@ -86,7 +86,7 @@ export function SwipeRail({
       ref={trackRef}
       className="relative flex w-full items-center overflow-hidden rounded-full"
       style={{
-        height: 52,
+        height: THUMB + PAD * 2,
         background: 'linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.04) 100%)',
         boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(255,255,255,0.05)',
       }}
@@ -118,7 +118,7 @@ export function SwipeRail({
           style={{ clipPath: rightClip }}
         >
           <ShinyText
-            text={biDir ? `Swipe right to ${rightLabel}` : `Swipe to ${rightLabel}`}
+            text={biDir ? rightLabel : `Swipe to ${rightLabel}`}
             speed={3}
             color="rgba(255,255,255,0.2)"
             shineColor="rgba(255,255,255,0.5)"
@@ -136,7 +136,7 @@ export function SwipeRail({
           style={{ clipPath: leftClip }}
         >
           <ShinyText
-            text={`Swipe left to ${leftLabel}`}
+            text={leftLabel}
             speed={3}
             color="rgba(255,255,255,0.2)"
             shineColor="rgba(255,255,255,0.5)"
@@ -152,7 +152,7 @@ export function SwipeRail({
         className="absolute z-20 flex touch-none items-center justify-center rounded-full"
         style={{
           width: THUMB,
-          height: THUMB - 8,
+          height: THUMB,
           left: biDir ? `calc(50% - ${THUMB / 2}px)` : `${PAD}px`,
           x,
           background: 'linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.06) 100%)',
