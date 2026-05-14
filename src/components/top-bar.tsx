@@ -1,6 +1,7 @@
 'use client';
 
 import { Command } from '@phosphor-icons/react';
+import { openCommandPalette } from '@/components/command-palette';
 
 function GitHubIcon({ className }: { className?: string }) {
   return (
@@ -11,14 +12,10 @@ function GitHubIcon({ className }: { className?: string }) {
 }
 
 export function TopBar() {
-  const handleCommandK = () => {
-    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true, bubbles: true }));
-  };
-
   return (
     <div className="flex shrink-0 items-center justify-between px-4 pb-1 pt-3">
       <button
-        onClick={handleCommandK}
+        onClick={openCommandPalette}
         className="flex items-center gap-1.5 rounded-lg bg-white/[0.03] px-2.5 py-1.5 text-[10px] text-white/25 transition-colors hover:bg-white/[0.06] hover:text-white/40"
       >
         <Command weight="duotone" className="h-3 w-3" />

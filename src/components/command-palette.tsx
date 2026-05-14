@@ -38,9 +38,17 @@ const tools: Tool[] = [
 
 const sections = [...new Set(tools.map(t => t.section))];
 
+let triggerOpen: (() => void) | null = null;
+
+export function openCommandPalette() {
+  triggerOpen?.();
+}
+
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
+
+  triggerOpen = () => setOpen(true);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
