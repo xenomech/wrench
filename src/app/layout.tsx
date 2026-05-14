@@ -30,13 +30,14 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <meta name="theme-color" content="#080808" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </head>
       <body className={`${jakarta.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
         <Providers>
-          <div className="bg-canvas flex h-screen flex-col overflow-hidden">
+          <div className="bg-canvas flex h-[100dvh] flex-col overflow-hidden">
             <main className="flex min-h-0 flex-1">{children}</main>
             <TabBar />
-            <footer className="shrink-0 pb-2 text-center text-[10px] text-white/15">
+            <footer className="shrink-0 pb-[max(0.5rem,env(safe-area-inset-bottom))] text-center text-[10px] text-white/15">
               built with <span className="text-red-400/50">&#9829;</span> wrenchkit
             </footer>
           </div>
