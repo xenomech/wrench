@@ -179,14 +179,15 @@ export function UuidGenerator() {
         </p>
         <div className="flex flex-col items-center">
           {history.map((uuid, i) => (
-            <Tooltip key={uuid} content={copiedIndex === i + 1 ? 'Copied!' : 'Copy'} side="top">
-              <div
-                onClick={() => copyOne(uuid, i + 1)}
-                className="cursor-pointer rounded-lg px-3 py-1 hover:bg-white/[0.03] md:py-1.5"
-              >
-                <span className="font-code text-[10px] text-white/30 md:text-xs">{uuid}</span>
-              </div>
-            </Tooltip>
+            <div
+              key={uuid}
+              onClick={() => copyOne(uuid, i + 1)}
+              className="group relative cursor-pointer rounded-lg px-3 py-1 hover:bg-white/[0.03] md:py-1.5"
+            >
+              <span className={`font-code text-[10px] md:text-xs ${copiedIndex === i + 1 ? 'text-emerald-400' : 'text-white/30'}`}>
+                {copiedIndex === i + 1 ? 'Copied!' : uuid}
+              </span>
+            </div>
           ))}
         </div>
       </div>
