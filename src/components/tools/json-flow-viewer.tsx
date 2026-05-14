@@ -16,7 +16,7 @@ import {
 import '@xyflow/react/dist/style.css';
 import { JsonCardNode } from '@/components/nodes/json-card-node';
 import { jsonToFlow } from '@/lib/json-to-nodes';
-import { Trash2, FileCode2 } from 'lucide-react';
+import { Trash, FileCode } from '@phosphor-icons/react';
 import { samples } from '@/lib/samples';
 
 const nodeTypes: NodeTypes = {
@@ -104,7 +104,7 @@ export function JsonFlowViewer() {
               onClick={handleSample}
               className="flex items-center gap-1.5 text-xs text-white/25 transition-colors duration-150 hover:text-white/50"
             >
-              <FileCode2 className="h-3 w-3" /> Load sample
+              <FileCode weight="duotone" className="h-3 w-3" /> Load sample
             </button>
             <span className="text-[10px] text-white/10">·</span>
             <span className="text-[10px] text-white/15">⌘⏎ to visualize</span>
@@ -141,7 +141,7 @@ export function JsonFlowViewer() {
             onClick={handleClear}
             className="flex items-center gap-1.5 rounded-xl bg-white/[0.06] px-3 py-2 text-[12px] font-medium text-white/40 shadow-lg shadow-black/20 transition-all duration-150 hover:bg-white/[0.1] hover:text-white/70 active:scale-95"
           >
-            <Trash2 className="h-3.5 w-3.5" /> New
+            <Trash weight="duotone" className="h-3.5 w-3.5" /> New
           </button>
         </Panel>
       </ReactFlow>

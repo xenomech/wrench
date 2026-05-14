@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Copy, Check, FileCode2, Trash2 } from 'lucide-react';
+import { Copy, Check, FileCode, Trash } from '@phosphor-icons/react';
 import { marked } from 'marked';
 import { ToolbarButton } from '@/components/toolbar-button';
 import { useToast } from '@/components/toast';
@@ -64,14 +64,14 @@ export function MarkdownPreview() {
     <div className="flex h-full flex-col gap-4">
       <div className="flex items-center gap-2">
         <ToolbarButton onClick={() => setInput(SAMPLE_MARKDOWN)}>
-          <FileCode2 className="h-4 w-4" /> Sample
+          <FileCode weight="duotone" className="h-4 w-4" /> Sample
         </ToolbarButton>
         <ToolbarButton onClick={() => setInput('')}>
-          <Trash2 className="h-4 w-4" /> Clear
+          <Trash weight="duotone" className="h-4 w-4" /> Clear
         </ToolbarButton>
         {hasPreview && (
           <ToolbarButton onClick={handleCopy}>
-            {copied ? <Check className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
+            {copied ? <Check weight="duotone" className="h-4 w-4 text-emerald-400" /> : <Copy weight="duotone" className="h-4 w-4" />}
             {copied ? 'Copied HTML' : 'Copy HTML'}
           </ToolbarButton>
         )}

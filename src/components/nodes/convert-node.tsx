@@ -1,7 +1,7 @@
 'use client';
 
 import { Handle, Position, type NodeProps } from '@xyflow/react';
-import { ArrowRightLeft, CheckCircle2, XCircle } from 'lucide-react';
+import { ArrowsLeftRight, CheckCircle, XCircle } from '@phosphor-icons/react';
 import type { NodeData } from '@/components/tools/json-pipeline';
 import type { Format } from '@/lib/converters';
 
@@ -28,11 +28,11 @@ export function ConvertNode({ data }: NodeProps) {
           }`}
         >
           {status === 'success' ? (
-            <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+            <CheckCircle weight="duotone" className="h-5 w-5 text-emerald-400" />
           ) : status === 'error' ? (
-            <XCircle className="h-5 w-5 text-red-400" />
+            <XCircle weight="duotone" className="h-5 w-5 text-red-400" />
           ) : (
-            <ArrowRightLeft className="h-5 w-5 text-white/40" />
+            <ArrowsLeftRight weight="duotone" className="h-5 w-5 text-white/40" />
           )}
         </div>
         <span className="text-[12px] font-semibold text-white/70">Convert</span>

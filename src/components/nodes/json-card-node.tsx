@@ -2,7 +2,7 @@
 
 import { Handle, Position, type NodeProps } from '@xyflow/react';
 import { useState } from 'react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { CaretDown, CaretRight } from '@phosphor-icons/react';
 
 type Entry = { key: string; value: string; type: string };
 type JsonCardData = { label: string; entries: Entry[]; isArray: boolean; isRoot: boolean };
@@ -37,9 +37,9 @@ export function JsonCardNode({ data }: NodeProps) {
         className={`flex w-full items-center gap-1.5 px-2.5 py-1.5 ${headerBg} transition-colors duration-100`}
       >
         {collapsed ? (
-          <ChevronRight className="h-2.5 w-2.5 text-white/30" />
+          <CaretRight weight="duotone" className="h-2.5 w-2.5 text-white/30" />
         ) : (
-          <ChevronDown className="h-2.5 w-2.5 text-white/30" />
+          <CaretDown weight="duotone" className="h-2.5 w-2.5 text-white/30" />
         )}
         <span className={`text-[10px] font-bold ${headerColor}`}>{label}</span>
         <span className="font-code ml-auto text-[9px] text-white/20">

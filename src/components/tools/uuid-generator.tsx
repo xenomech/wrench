@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check } from '@phosphor-icons/react';
 
 const HEX = '0123456789abcdef';
 const SCRAMBLE_DURATION = 600;
@@ -155,7 +155,7 @@ export function UuidGenerator() {
               onClick={(e) => { e.stopPropagation(); copyOne(current, 0); }}
               className="flex items-center gap-1.5 text-xs text-white/25 transition-colors duration-150 hover:text-white/50"
             >
-              {copiedIndex === 0 ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
+              {copiedIndex === 0 ? <Check weight="duotone" className="h-3 w-3 text-emerald-400" /> : <Copy weight="duotone" className="h-3 w-3" />}
               {copiedIndex === 0 ? 'Copied' : 'Copy'}
             </button>
           </div>

@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Copy, Check, Trash2 } from 'lucide-react';
+import { Copy, Check, Trash } from '@phosphor-icons/react';
 import { useToast } from '@/components/toast';
 import { SwipeRail } from '@/components/swipe-rail';
 import { md5 } from '@/lib/md5';
@@ -116,7 +116,7 @@ export function HashGenerator() {
             onClick={handleClear}
             className="mt-2 flex items-center gap-1.5 text-xs text-white/25 transition-colors duration-150 hover:text-white/50"
           >
-            <Trash2 className="h-3 w-3" /> Clear
+            <Trash weight="duotone" className="h-3 w-3" /> Clear
           </button>
         )}
       </div>
@@ -149,9 +149,9 @@ export function HashGenerator() {
                     className="text-white/20 transition-colors duration-150 hover:text-white/50"
                   >
                     {copiedField === row.key ? (
-                      <Check className="h-3 w-3 text-emerald-400" />
+                      <Check weight="duotone" className="h-3 w-3 text-emerald-400" />
                     ) : (
-                      <Copy className="h-3 w-3" />
+                      <Copy weight="duotone" className="h-3 w-3" />
                     )}
                   </button>
                 </div>

@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, AlertTriangle, CheckCircle2, Copy, Check, Trash2 } from 'lucide-react';
+import { Clock, Warning, CheckCircle, Copy, Check, Trash } from '@phosphor-icons/react';
 import { SwipeRail } from '@/components/swipe-rail';
 import { useToast } from '@/components/toast';
 import { CodeEditor } from '@/components/code-editor';
@@ -65,7 +65,7 @@ function JsonBlock({ label, value, color }: { label: string; value: string; colo
           onClick={handleCopy}
           className="text-white/20 transition-colors duration-150 hover:text-white/50"
         >
-          {copied ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
+          {copied ? <Check weight="duotone" className="h-3 w-3 text-emerald-400" /> : <Copy weight="duotone" className="h-3 w-3" />}
         </button>
       </div>
       <div className="min-h-[80px] flex-1">
@@ -203,7 +203,7 @@ export function JwtDecoderTool() {
             onClick={handleClear}
             className="mt-2 flex items-center gap-1.5 text-xs text-white/25 transition-colors duration-150 hover:text-white/50"
           >
-            <Trash2 className="h-3 w-3" /> Clear
+            <Trash weight="duotone" className="h-3 w-3" /> Clear
           </button>
         )}
       </div>
@@ -230,11 +230,11 @@ export function JwtDecoderTool() {
                 transition={{ delay: 0.1 }}
               >
                 {decoded.expiry.expired ? (
-                  <AlertTriangle className="h-3.5 w-3.5" />
+                  <Warning weight="duotone" className="h-3.5 w-3.5" />
                 ) : (
-                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  <CheckCircle weight="duotone" className="h-3.5 w-3.5" />
                 )}
-                <Clock className="h-3 w-3" />
+                <Clock weight="duotone" className="h-3 w-3" />
                 {decoded.expiry.expired ? 'Expired' : 'Valid'} —{' '}
                 {decoded.expiry.date.toLocaleString()}
               </motion.div>

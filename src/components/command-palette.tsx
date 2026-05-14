@@ -2,24 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Search,
-  Braces,
-  Lock,
-  Fingerprint,
-  FileText,
-  Sparkles,
-  ArrowRightLeft,
-  ShieldCheck,
-  Binary,
-  Link2,
-  Code2,
-  KeyRound,
-  Hash,
-  Type,
-  GitCompareArrows,
-  Clock,
-} from 'lucide-react';
+import { MagnifyingGlass, BracketsCurly, Lock, Fingerprint, FileText, Sparkle, ArrowsLeftRight, ShieldCheck, Binary, Link, Code, Key, Hash, TextAa, GitDiff, Clock } from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
 
 type Command = {
@@ -27,7 +10,7 @@ type Command = {
   label: string;
   section: string;
   href: string;
-  icon: typeof Braces;
+  icon: typeof BracketsCurly;
   keywords: string[];
 };
 
@@ -37,7 +20,7 @@ const commands: Command[] = [
     label: 'Formatter',
     section: 'JSON',
     href: '/json',
-    icon: Sparkles,
+    icon: Sparkle,
     keywords: ['format', 'beautify', 'json', 'yaml', 'toml'],
   },
   {
@@ -45,7 +28,7 @@ const commands: Command[] = [
     label: 'Converter',
     section: 'JSON',
     href: '/json',
-    icon: ArrowRightLeft,
+    icon: ArrowsLeftRight,
     keywords: ['convert', 'json', 'yaml', 'toml'],
   },
   {
@@ -69,7 +52,7 @@ const commands: Command[] = [
     label: 'URL Encode',
     section: 'Encode',
     href: '/encode/url',
-    icon: Link2,
+    icon: Link,
     keywords: ['url', 'encode', 'decode'],
   },
   {
@@ -77,7 +60,7 @@ const commands: Command[] = [
     label: 'HTML Entities',
     section: 'Encode',
     href: '/encode/html',
-    icon: Code2,
+    icon: Code,
     keywords: ['html', 'entities', 'escape'],
   },
   {
@@ -85,7 +68,7 @@ const commands: Command[] = [
     label: 'JWT Decoder',
     section: 'Encode',
     href: '/encode/jwt',
-    icon: KeyRound,
+    icon: Key,
     keywords: ['jwt', 'token', 'decode'],
   },
   {
@@ -101,7 +84,7 @@ const commands: Command[] = [
     label: 'Lorem Ipsum',
     section: 'Generate',
     href: '/generators/lorem',
-    icon: Type,
+    icon: TextAa,
     keywords: ['lorem', 'placeholder'],
   },
   {
@@ -117,7 +100,7 @@ const commands: Command[] = [
     label: 'Diff',
     section: 'Text',
     href: '/text',
-    icon: GitCompareArrows,
+    icon: GitDiff,
     keywords: ['diff', 'compare'],
   },
   {
@@ -235,7 +218,7 @@ export function CommandPalette() {
             transition={{ duration: 0.12, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
             <div className="flex items-center gap-3 border-b border-white/[0.06] px-4">
-              <Search className="h-4 w-4 text-white/25" />
+              <MagnifyingGlass weight="duotone" className="h-4 w-4 text-white/25" />
               <input
                 ref={inputRef}
                 value={query}

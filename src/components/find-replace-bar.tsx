@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Replace, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { MagnifyingGlass, Swap, X, CaretDown, CaretUp } from '@phosphor-icons/react';
 
 type FindReplaceBarProps = {
   open: boolean;
@@ -96,14 +96,14 @@ export function FindReplaceBar({
                 className="shrink-0 text-white/20 transition-colors duration-100 hover:text-white/40"
               >
                 {showReplace ? (
-                  <ChevronUp className="h-3 w-3" />
+                  <CaretUp weight="duotone" className="h-3 w-3" />
                 ) : (
-                  <ChevronDown className="h-3 w-3" />
+                  <CaretDown weight="duotone" className="h-3 w-3" />
                 )}
               </button>
             )}
             <div className="flex flex-1 items-center gap-1.5 rounded-lg bg-black/25 px-2.5 py-1.5">
-              <Search className="h-3 w-3 shrink-0 text-white/20" />
+              <MagnifyingGlass weight="duotone" className="h-3 w-3 shrink-0 text-white/20" />
               <input
                 ref={findRef}
                 value={find}
@@ -122,21 +122,21 @@ export function FindReplaceBar({
                 disabled={matchCount === 0}
                 className="shrink-0 text-white/20 transition-colors duration-100 hover:text-white/40 disabled:opacity-20"
               >
-                <ChevronUp className="h-3 w-3" />
+                <CaretUp weight="duotone" className="h-3 w-3" />
               </button>
               <button
                 onClick={goNext}
                 disabled={matchCount === 0}
                 className="shrink-0 text-white/20 transition-colors duration-100 hover:text-white/40 disabled:opacity-20"
               >
-                <ChevronDown className="h-3 w-3" />
+                <CaretDown weight="duotone" className="h-3 w-3" />
               </button>
             </div>
             <button
               onClick={handleClose}
               className="shrink-0 text-white/20 transition-colors duration-100 hover:text-white/40"
             >
-              <X className="h-3 w-3" />
+              <X weight="duotone" className="h-3 w-3" />
             </button>
           </div>
 
@@ -144,7 +144,7 @@ export function FindReplaceBar({
             <div className="flex items-center gap-1.5">
               <div className="w-3 shrink-0" />
               <div className="flex flex-1 items-center gap-1.5 rounded-lg bg-black/25 px-2.5 py-1.5">
-                <Replace className="h-3 w-3 shrink-0 text-white/20" />
+                <Swap weight="duotone" className="h-3 w-3 shrink-0 text-white/20" />
                 <input
                   value={replace}
                   onChange={e => setReplace(e.target.value)}

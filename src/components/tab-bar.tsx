@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Braces, Lock, Fingerprint, FileText, Clock } from 'lucide-react';
+import { BracketsCurly, Lock, Fingerprint, FileText, Clock } from '@phosphor-icons/react';
 import type { ComponentType } from 'react';
 
 export type TabTheme = {
@@ -69,7 +69,7 @@ const tabs: Tab[] = [
     theme: TAB_THEMES.generators!,
   },
   { id: 'time', label: 'Time', href: '/time', icon: Clock, theme: TAB_THEMES.time! },
-  { id: 'json', label: 'JSON', href: '/json', icon: Braces, theme: TAB_THEMES.json! },
+  { id: 'json', label: 'JSON', href: '/json', icon: BracketsCurly, theme: TAB_THEMES.json! },
   { id: 'encode', label: 'Encode', href: '/encode', icon: Lock, theme: TAB_THEMES.encode! },
   { id: 'text', label: 'Text', href: '/text', icon: FileText, theme: TAB_THEMES.text! },
 ];

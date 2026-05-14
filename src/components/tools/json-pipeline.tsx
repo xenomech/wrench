@@ -21,7 +21,7 @@ import { FormatNode } from '@/components/nodes/format-node';
 import { ConvertNode } from '@/components/nodes/convert-node';
 import { ValidateNode } from '@/components/nodes/validate-node';
 import { OutputNode } from '@/components/nodes/output-node';
-import { Plus, Sparkles, ArrowRightLeft, ShieldCheck, Minimize2 } from 'lucide-react';
+import { Plus, Sparkle, ArrowsLeftRight, ShieldCheck, ArrowsIn } from '@phosphor-icons/react';
 import { format, convert, validate, type Format } from '@/lib/converters';
 
 export type NodeData = {
@@ -270,19 +270,19 @@ export function JsonPipeline() {
             onClick={() => addNode('format')}
             className="flex items-center gap-1.5 rounded-xl bg-white/[0.06] px-3 py-2 text-[12px] font-medium text-white/50 transition-all duration-150 hover:bg-white/[0.1] hover:text-white/80 active:scale-95"
           >
-            <Sparkles className="h-3.5 w-3.5" /> Format
+            <Sparkle weight="duotone" className="h-3.5 w-3.5" /> Format
           </button>
           <button
             onClick={() => addNode('convert')}
             className="flex items-center gap-1.5 rounded-xl bg-white/[0.06] px-3 py-2 text-[12px] font-medium text-white/50 transition-all duration-150 hover:bg-white/[0.1] hover:text-white/80 active:scale-95"
           >
-            <ArrowRightLeft className="h-3.5 w-3.5" /> Convert
+            <ArrowsLeftRight weight="duotone" className="h-3.5 w-3.5" /> Convert
           </button>
           <button
             onClick={() => addNode('validate')}
             className="flex items-center gap-1.5 rounded-xl bg-white/[0.06] px-3 py-2 text-[12px] font-medium text-white/50 transition-all duration-150 hover:bg-white/[0.1] hover:text-white/80 active:scale-95"
           >
-            <ShieldCheck className="h-3.5 w-3.5" /> Validate
+            <ShieldCheck weight="duotone" className="h-3.5 w-3.5" /> Validate
           </button>
           <div className="ml-2 h-5 w-px bg-white/10" />
           <button

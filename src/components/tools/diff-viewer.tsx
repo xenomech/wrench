@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trash2, FileCode2, Copy, Check } from 'lucide-react';
+import { Trash, FileCode, Copy, Check } from '@phosphor-icons/react';
 import { diffLines, diffWords, type Change } from 'diff';
 import { ToolbarButton } from '@/components/toolbar-button';
 import { useToast } from '@/components/toast';
@@ -244,7 +244,7 @@ export function DiffViewer() {
               setModified(SAMPLE_MODIFIED);
             }}
           >
-            <FileCode2 className="h-4 w-4" /> Sample
+            <FileCode weight="duotone" className="h-4 w-4" /> Sample
           </ToolbarButton>
           <ToolbarButton
             onClick={() => {
@@ -252,11 +252,11 @@ export function DiffViewer() {
               setModified('');
             }}
           >
-            <Trash2 className="h-4 w-4" /> Clear
+            <Trash weight="duotone" className="h-4 w-4" /> Clear
           </ToolbarButton>
           {hasChanges && (
             <ToolbarButton onClick={handleCopy}>
-              {copied ? <Check className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
+              {copied ? <Check weight="duotone" className="h-4 w-4 text-emerald-400" /> : <Copy weight="duotone" className="h-4 w-4" />}
               {copied ? 'Copied' : 'Copy Diff'}
             </ToolbarButton>
           )}

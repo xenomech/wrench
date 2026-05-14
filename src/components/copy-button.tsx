@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check } from '@phosphor-icons/react';
 
 type CopyButtonProps = {
   text: string;
@@ -37,8 +37,8 @@ export function CopyButton({
   }, [text, onCopied]);
 
   const icon = copied
-    ? <Check className={`${iconSize[size]} text-emerald-400`} />
-    : <Copy className={iconSize[size]} />;
+    ? <Check weight="duotone" className={`${iconSize[size]} text-emerald-400`} />
+    : <Copy weight="duotone" className={iconSize[size]} />;
 
   return (
     <button onClick={handleCopy} className={className || 'text-white/20 transition-colors duration-150 hover:text-white/50'}>

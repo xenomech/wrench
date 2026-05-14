@@ -2,7 +2,7 @@
 
 import { Handle, Position, type NodeProps } from '@xyflow/react';
 import { useState } from 'react';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check } from '@phosphor-icons/react';
 import type { NodeData } from '@/components/tools/json-pipeline';
 
 export function OutputNode({ data }: NodeProps) {
@@ -33,7 +33,7 @@ export function OutputNode({ data }: NodeProps) {
             onClick={handleCopy}
             className="flex items-center gap-1 text-[11px] text-white/25 transition-colors duration-150 hover:text-white/50"
           >
-            {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+            {copied ? <Check weight="duotone" className="h-3 w-3" /> : <Copy weight="duotone" className="h-3 w-3" />}
             {copied ? 'Copied' : 'Copy'}
           </button>
         )}

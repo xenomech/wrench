@@ -1,7 +1,7 @@
 'use client';
 
 import { Handle, Position, type NodeProps } from '@xyflow/react';
-import { Sparkles, CheckCircle2, XCircle } from 'lucide-react';
+import { Sparkle, CheckCircle, XCircle } from '@phosphor-icons/react';
 import type { NodeData } from '@/components/tools/json-pipeline';
 
 export function FormatNode({ data }: NodeProps) {
@@ -26,11 +26,11 @@ export function FormatNode({ data }: NodeProps) {
           }`}
         >
           {status === 'success' ? (
-            <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+            <CheckCircle weight="duotone" className="h-5 w-5 text-emerald-400" />
           ) : status === 'error' ? (
-            <XCircle className="h-5 w-5 text-red-400" />
+            <XCircle weight="duotone" className="h-5 w-5 text-red-400" />
           ) : (
-            <Sparkles className="h-5 w-5 text-white/40" />
+            <Sparkle weight="duotone" className="h-5 w-5 text-white/40" />
           )}
         </div>
         <span className="text-[12px] font-semibold text-white/70">Format</span>

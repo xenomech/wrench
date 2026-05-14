@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trash2, ArrowDown } from 'lucide-react';
+import { Trash, ArrowDown } from '@phosphor-icons/react';
 import { useToast } from '@/components/toast';
 import { SwipeRail } from '@/components/swipe-rail';
 import { CopyButton } from '@/components/copy-button';
@@ -114,7 +114,7 @@ export function Base64Tool() {
             onClick={handleClear}
             className="mt-2 flex items-center gap-1.5 text-xs text-white/25 transition-colors duration-150 hover:text-white/50"
           >
-            <Trash2 className="h-3 w-3" /> Clear
+            <Trash weight="duotone" className="h-3 w-3" /> Clear
           </button>
         )}
       </div>
@@ -134,7 +134,7 @@ export function Base64Tool() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.05 }}
             >
-              <ArrowDown className="h-3 w-3" />
+              <ArrowDown weight="duotone" className="h-3 w-3" />
               {lastAction === 'encode' ? 'Encoded' : 'Decoded'}
             </motion.div>
 

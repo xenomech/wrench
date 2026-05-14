@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRightLeft, Copy, Check, Trash2 } from 'lucide-react';
+import { ArrowsLeftRight, Copy, Check, Trash } from '@phosphor-icons/react';
 import { CodeEditor } from '@/components/code-editor';
 import { FormatSelector } from '@/components/format-selector';
 import { useToast } from '@/components/toast';
@@ -103,7 +103,7 @@ export function Converter() {
             onClick={handleSwap}
             className="rounded-lg p-1.5 text-white/25 transition-all duration-150 hover:bg-white/[0.05] hover:text-white/50 active:scale-90"
           >
-            <ArrowRightLeft className="h-4 w-4" />
+            <ArrowsLeftRight weight="duotone" className="h-4 w-4" />
           </button>
           <FormatSelector value={toFormat} onChange={setToFormat} layoutId="converter-to" />
         </div>
@@ -115,7 +115,7 @@ export function Converter() {
             }}
             className="text-white/20 transition-colors duration-150 hover:text-white/45"
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash weight="duotone" className="h-4 w-4" />
           </button>
         )}
       </div>
@@ -162,7 +162,7 @@ export function Converter() {
                   onClick={handleCopy}
                   className="flex items-center gap-1 text-[11px] text-white/25 transition-colors duration-150 hover:text-white/50"
                 >
-                  {copied ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
+                  {copied ? <Check weight="duotone" className="h-3 w-3 text-emerald-400" /> : <Copy weight="duotone" className="h-3 w-3" />}
                   {copied ? 'Copied' : 'Copy'}
                 </button>
               </div>

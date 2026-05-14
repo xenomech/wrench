@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Copy, Check, RotateCcw, Sun, Moon, Plus, X, Settings2 } from 'lucide-react';
+import { Copy, Check, ArrowCounterClockwise, Sun, Moon, Plus, X, GearSix } from '@phosphor-icons/react';
 import { useTimeStore, ALL_TIMEZONES, type CityZone } from '@/lib/time-store';
 import {
   format as fnsFormat,
@@ -115,7 +115,7 @@ function AddCityButton({ onAdd, existingCodes, variant = 'icon' }: { onAdd: (cit
           : 'text-white/15 transition-colors hover:text-white/35'
         }
       >
-        <Plus className={variant === 'empty' ? 'h-4 w-4' : 'h-3.5 w-3.5'} />
+        <Plus weight="duotone" className={variant === 'empty' ? 'h-4 w-4' : 'h-3.5 w-3.5'} />
         {variant === 'empty' && 'Add a city'}
       </button>
       <AnimatePresence>
@@ -175,7 +175,7 @@ function PrefsPanel({ onClose }: { onClose: () => void }) {
       <div className="p-4">
       <div className="mb-4 flex items-center justify-between">
         <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/25">Preferences</span>
-        <button onClick={onClose} className="text-white/20 transition-colors hover:text-white/50"><X className="h-3.5 w-3.5" /></button>
+        <button onClick={onClose} className="text-white/20 transition-colors hover:text-white/50"><X weight="duotone" className="h-3.5 w-3.5" /></button>
       </div>
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
@@ -246,7 +246,7 @@ function ConverterRow({ label, value }: { label: string; value: string }) {
     <div onClick={copy} className="group flex cursor-pointer items-center gap-3 rounded-lg px-2 py-1.5 transition-colors hover:bg-white/[0.03]">
       <span className="w-10 text-[10px] font-semibold uppercase tracking-widest text-white/20">{label}</span>
       <span className="font-code flex-1 truncate text-[12px] text-white/50 group-hover:text-white/70">{value}</span>
-      {copied ? <Check className="h-3 w-3 shrink-0 text-emerald-400" /> : <Copy className="h-3 w-3 shrink-0 text-white/0 group-hover:text-white/25" />}
+      {copied ? <Check weight="duotone" className="h-3 w-3 shrink-0 text-emerald-400" /> : <Copy weight="duotone" className="h-3 w-3 shrink-0 text-white/0 group-hover:text-white/25" />}
     </div>
   );
 }
@@ -302,7 +302,7 @@ export function TimeTool() {
             <div className="flex items-center gap-2">
               <AddCityButton onAdd={addCity} existingCodes={cities.map(c => c.code)} />
               <button onClick={() => setPrefsOpen(p => !p)} className="text-white/15 transition-colors hover:text-white/35">
-                <Settings2 className="h-3.5 w-3.5" />
+                <GearSix weight="duotone" className="h-3.5 w-3.5" />
               </button>
             </div>
           </div>
@@ -340,9 +340,9 @@ export function TimeTool() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1.5">
                         {day ? (
-                          <Sun className="h-2.5 w-2.5 text-amber-400/60 md:h-3 md:w-3" />
+                          <Sun weight="duotone" className="h-2.5 w-2.5 text-amber-400/60 md:h-3 md:w-3" />
                         ) : (
-                          <Moon className="h-2.5 w-2.5 text-blue-400/60 md:h-3 md:w-3" />
+                          <Moon weight="duotone" className="h-2.5 w-2.5 text-blue-400/60 md:h-3 md:w-3" />
                         )}
                         <span className={`text-[8px] font-semibold uppercase tracking-[0.15em] md:text-[9px] ${day ? 'text-amber-300/40' : 'text-blue-300/40'}`}>
                           {city.label}
@@ -352,7 +352,7 @@ export function TimeTool() {
                         onClick={() => removeCity(city.code)}
                         className="text-white/0 transition-colors group-hover:text-white/20 hover:!text-white/50"
                       >
-                        <X className="h-3 w-3" />
+                        <X weight="duotone" className="h-3 w-3" />
                       </button>
                     </div>
 
@@ -405,7 +405,7 @@ export function TimeTool() {
                 className="font-code flex-1 bg-transparent text-[11px] text-white/60 outline-none placeholder:text-white/12 md:text-[12px]"
               />
               <button onClick={handleNow} className="flex items-center gap-1 text-[9px] font-semibold uppercase tracking-widest text-white/15 transition-colors hover:text-white/40">
-                <RotateCcw className="h-3 w-3" /> Now
+                <ArrowCounterClockwise weight="duotone" className="h-3 w-3" /> Now
               </button>
             </div>
             <AnimatePresence>

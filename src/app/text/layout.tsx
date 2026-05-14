@@ -1,10 +1,10 @@
 'use client';
 
-import { GitCompareArrows, FileText } from 'lucide-react';
+import { GitDiff, FileText } from '@phosphor-icons/react';
 import { ToolLayout } from '@/components/tool-layout';
 
 const tools = [
-  { id: 'diff', label: 'Diff', href: '/text', icon: GitCompareArrows },
+  { id: 'diff', label: 'Diff', href: '/text', icon: GitDiff },
   { id: 'markdown', label: 'Markdown', href: '/text/markdown', icon: FileText },
 ];
 

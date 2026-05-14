@@ -2,7 +2,7 @@
 
 import { useRef, useCallback, useState, useEffect } from 'react';
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
-import { ChevronRight, GripVertical } from 'lucide-react';
+import { CaretRight, DotsSixVertical } from '@phosphor-icons/react';
 import { ShinyText } from '@/components/shiny-text';
 
 type SwipeRailProps = {
@@ -168,9 +168,9 @@ export function SwipeRail({
         whileTap={{ cursor: 'grabbing', scale: 0.96 }}
       >
         {biDir ? (
-          <GripVertical className="h-4 w-4 text-white/40" />
+          <DotsSixVertical weight="duotone" className="h-4 w-4 text-white/40" />
         ) : (
-          <ChevronRight className="h-4 w-4 text-white/40" />
+          <CaretRight weight="duotone" className="h-4 w-4 text-white/40" />
         )}
       </motion.div>
     </div>

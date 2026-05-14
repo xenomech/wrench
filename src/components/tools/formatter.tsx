@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Copy, Check, Trash2, Workflow, Code2 } from 'lucide-react';
+import { Copy, Check, Trash, FlowArrow, Code } from '@phosphor-icons/react';
 import { CodeEditor } from '@/components/code-editor';
 import { FormatSelector } from '@/components/format-selector';
 import { useToast } from '@/components/toast';
@@ -104,7 +104,7 @@ export function Formatter() {
                     : 'text-white/25 hover:text-white/45'
                 }`}
               >
-                <Code2 className="h-3.5 w-3.5" />
+                <Code weight="duotone" className="h-3.5 w-3.5" />
               </button>
               <button
                 onClick={() => setOutputView('flow')}
@@ -114,7 +114,7 @@ export function Formatter() {
                     : 'text-white/25 hover:text-white/45'
                 }`}
               >
-                <Workflow className="h-3.5 w-3.5" />
+                <FlowArrow weight="duotone" className="h-3.5 w-3.5" />
               </button>
             </div>
           )}
@@ -126,7 +126,7 @@ export function Formatter() {
               }}
               className="text-white/20 transition-colors duration-150 hover:text-white/45"
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash weight="duotone" className="h-4 w-4" />
             </button>
           )}
           <div className="flex items-center gap-1 rounded-lg bg-black/20 px-2 py-1">
@@ -189,7 +189,7 @@ export function Formatter() {
                     onClick={handleCopy}
                     className="flex items-center gap-1 text-[11px] text-white/25 transition-colors duration-150 hover:text-white/50"
                   >
-                    {copied ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
+                    {copied ? <Check weight="duotone" className="h-3 w-3 text-emerald-400" /> : <Copy weight="duotone" className="h-3 w-3" />}
                     {copied ? 'Copied' : 'Copy'}
                   </button>
                 )}

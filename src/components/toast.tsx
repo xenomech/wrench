@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useCallback, useState, type ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, XCircle } from 'lucide-react';
+import { CheckCircle, XCircle } from '@phosphor-icons/react';
 
 type Toast = { id: number; status: 'success' | 'error'; message: string };
 type ToastContextValue = { toast: (status: 'success' | 'error', message: string) => void };
@@ -30,7 +30,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         <AnimatePresence>
           {toasts.map(t => {
             const ok = t.status === 'success';
-            const Icon = ok ? CheckCircle2 : XCircle;
+            const Icon = ok ? CheckCircle : XCircle;
             return (
               <motion.div
                 key={t.id}

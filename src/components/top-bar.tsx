@@ -1,6 +1,6 @@
 'use client';
 
-import { Command } from 'lucide-react';
+import { Command } from '@phosphor-icons/react';
 
 function GitHubIcon({ className }: { className?: string }) {
   return (
@@ -21,7 +21,7 @@ export function TopBar() {
         onClick={handleCommandK}
         className="flex items-center gap-1.5 rounded-lg bg-white/[0.03] px-2.5 py-1.5 text-[10px] text-white/25 transition-colors hover:bg-white/[0.06] hover:text-white/40"
       >
-        <Command className="h-3 w-3" />
+        <Command weight="duotone" className="h-3 w-3" />
         <span className="font-code">K</span>
       </button>
       <a

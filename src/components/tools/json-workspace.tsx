@@ -2,14 +2,7 @@
 
 import { useState, useCallback, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Trash2,
-  Sparkles,
-  Workflow,
-  FileCode2,
-  MoveRight,
-  Search,
-} from 'lucide-react';
+import { Trash, Sparkle, FlowArrow, FileCode, ArrowRight, MagnifyingGlass } from '@phosphor-icons/react';
 import { CopyButton } from '@/components/copy-button';
 import { CodeEditor } from '@/components/code-editor';
 import { FindReplaceBar } from '@/components/find-replace-bar';
@@ -233,7 +226,7 @@ export function JsonWorkspace() {
                 onClick={handleApplyFormat}
                 className="flex items-center gap-1 text-[11px] text-white/30 transition-colors duration-150 hover:text-white/60 active:scale-95"
               >
-                <Sparkles className="h-3 w-3" /> Format
+                <Sparkle weight="duotone" className="h-3 w-3" /> Format
               </button>
             )}
             <div className="flex items-center gap-0.5 rounded-lg bg-black/20 p-0.5">
@@ -252,21 +245,21 @@ export function JsonWorkspace() {
                 onClick={() => setSrcSearchOpen(o => !o)}
                 className={`transition-colors duration-150 ${srcSearchOpen ? 'text-white/50' : 'text-white/20 hover:text-white/40'}`}
               >
-                <Search className="h-3.5 w-3.5" />
+                <MagnifyingGlass weight="duotone" className="h-3.5 w-3.5" />
               </button>
             )}
             <button
               onClick={handleSample}
               className="text-white/20 transition-colors duration-150 hover:text-white/40"
             >
-              <FileCode2 className="h-3.5 w-3.5" />
+              <FileCode weight="duotone" className="h-3.5 w-3.5" />
             </button>
             {hasInput && (
               <button
                 onClick={handleClear}
                 className="text-white/20 transition-colors duration-150 hover:text-white/40"
               >
-                <Trash2 className="h-3.5 w-3.5" />
+                <Trash weight="duotone" className="h-3.5 w-3.5" />
               </button>
             )}
           </div>
@@ -308,7 +301,7 @@ export function JsonWorkspace() {
             exit={{ opacity: 0, scale: 0.5 }}
             transition={{ duration: 0.15 }}
           >
-            <MoveRight className="h-6 w-6 text-white/10" />
+            <ArrowRight weight="duotone" className="h-6 w-6 text-white/10" />
           </motion.div>
         )}
       </AnimatePresence>
@@ -337,7 +330,7 @@ export function JsonWorkspace() {
                           : 'text-white/25 hover:text-white/45'
                       }`}
                     >
-                      {tab.id === 'flow' && <Workflow className="h-3 w-3" />}
+                      {tab.id === 'flow' && <FlowArrow weight="duotone" className="h-3 w-3" />}
                       {tab.label}
                     </button>
                   ))}
@@ -348,7 +341,7 @@ export function JsonWorkspace() {
                     onClick={() => setOutSearchOpen(o => !o)}
                     className={`transition-colors duration-150 ${outSearchOpen ? 'text-white/50' : 'text-white/20 hover:text-white/40'}`}
                   >
-                    <Search className="h-3.5 w-3.5" />
+                    <MagnifyingGlass weight="duotone" className="h-3.5 w-3.5" />
                   </button>
                 )}
                 {activeTab !== 'flow' && activeOutput && (

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { Trash2 } from 'lucide-react';
+import { Trash } from '@phosphor-icons/react';
 import { CodeEditor } from '@/components/code-editor';
 import { FormatSelector } from '@/components/format-selector';
 import { validate, detectFormat, type Format } from '@/lib/converters';
@@ -67,7 +67,7 @@ export function Validator() {
               onClick={() => setInput('')}
               className="text-white/20 transition-colors duration-150 hover:text-white/45"
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash weight="duotone" className="h-4 w-4" />
             </button>
           )}
         </div>
