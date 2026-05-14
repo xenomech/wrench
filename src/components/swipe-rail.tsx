@@ -29,12 +29,20 @@ export function SwipeRail({
 
   const biDirectional = !!onSwipeLeft && !!onSwipeRight;
 
-  const getTravel = useCallback(() => {
-    const w = trackRef.current?.getBoundingClientRect().width ?? 0;
-    return Math.max(0, w - THUMB_SIZE - THUMB_PAD * 2);
+  const [trackWidth, setTrackWidth] = useState(0);
+
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    setTrackWidth(el.offsetWidth);
+    const observer = new ResizeObserver(([entry]) => {
+      if (entry) setTrackWidth(entry.contentRect.width);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
   }, []);
 
-  const fullTravel = getTravel();
+  const fullTravel = Math.max(0, trackWidth - THUMB_SIZE - THUMB_PAD * 2);
   const maxRight = biDirectional ? fullTravel / 2 : fullTravel;
   const maxLeft = biDirectional ? fullTravel / 2 : 0;
 
@@ -59,21 +67,18 @@ export function SwipeRail({
   const leftFillWidth = useTransform(leftFill, v => `${v * 100}%`);
 
   const handleDragEnd = useCallback(() => {
-    const travel = getTravel();
-    const mr = biDirectional ? travel / 2 : travel;
-    const ml = biDirectional ? travel / 2 : 0;
     const current = x.get();
 
-    if (mr > 0 && current / mr >= COMPLETE_THRESHOLD && onSwipeRight) {
-      animate(x, mr, {
+    if (maxRight > 0 && current / maxRight >= COMPLETE_THRESHOLD && onSwipeRight) {
+      animate(x, maxRight, {
         type: 'spring', stiffness: 500, damping: 30,
         onComplete: () => {
           animate(x, 0, { type: 'spring', stiffness: 400, damping: 28 });
           onSwipeRight();
         },
       });
-    } else if (biDirectional && ml > 0 && current / -ml >= COMPLETE_THRESHOLD && onSwipeLeft) {
-      animate(x, -ml, {
+    } else if (biDirectional && maxLeft > 0 && current / -maxLeft >= COMPLETE_THRESHOLD && onSwipeLeft) {
+      animate(x, -maxLeft, {
         type: 'spring', stiffness: 500, damping: 30,
         onComplete: () => {
           animate(x, 0, { type: 'spring', stiffness: 400, damping: 28 });
@@ -83,7 +88,7 @@ export function SwipeRail({
     } else {
       animate(x, 0, { type: 'spring', stiffness: 500, damping: 35 });
     }
-  }, [x, biDirectional, onSwipeLeft, onSwipeRight, getTravel]);
+  }, [x, maxRight, maxLeft, biDirectional, onSwipeLeft, onSwipeRight]);
 
   const thumbLeft = biDirectional
     ? `calc(50% - ${THUMB_SIZE / 2}px)`
@@ -157,7 +162,7 @@ export function SwipeRail({
       )}
 
       <motion.div
-        className="absolute z-20 flex touch-none items-center justify-center rounded-xl bg-white/10 shadow-lg shadow-black/20 backdrop-blur-sm"
+        className="absolute z-20 flex touch-none items-center justify-center rounded-xl bg-white/10"
         style={{
           width: THUMB_SIZE,
           height: THUMB_SIZE - 8,

@@ -21,10 +21,11 @@ export function LoremGenerator() {
   const hintOpacity = useTransform(y, [-60, -20, 0], [1, 0.6, 0.3]);
 
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
-    check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
+    const mq = window.matchMedia('(max-width: 767px)');
+    setIsMobile(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
   }, []);
 
   const generate = useCallback(() => {
@@ -125,6 +126,7 @@ export function LoremGenerator() {
             >
               {words.map((word, i) => {
                 if (/^\s+$/.test(word)) return <span key={i}>{word}</span>;
+                if (i > 40) return <span key={i} className="text-white/80">{word}</span>;
                 return (
                   <motion.span
                     key={`${generation}-${i}`}

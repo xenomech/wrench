@@ -48,6 +48,11 @@ body {
   animation: drift-3 20s ease-in-out infinite;
 }
 
+@keyframes shiny-slide {
+  0% { background-position: 150% center; }
+  100% { background-position: -50% center; }
+}
+
 .hide-scroll {
   &::-webkit-scrollbar {
     display: none !important;
