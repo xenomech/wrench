@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { TabBar } from "@/components/tab-bar";
 import { TopBar } from "@/components/top-bar";
 import { Providers } from "@/components/providers";
@@ -46,6 +47,7 @@ export default function RootLayout({
             <TabBar />
           </div>
         </Providers>
+        <Analytics />
       </body>
     </html>
   );
