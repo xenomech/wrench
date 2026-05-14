@@ -31,6 +31,7 @@ export function HashGenerator() {
   const { toast } = useToast();
 
   useEffect(() => {
+    if (window.matchMedia("(pointer: fine)").matches)
     inputRef.current?.focus();
   }, []);
 

@@ -80,14 +80,13 @@ function TokenDisplay({ value }: { value: string }) {
   if (parts.length !== 3) return null;
 
   const colors = ['text-violet-400', 'text-amber-400', 'text-red-400'];
-  const dotColor = 'text-white/20';
 
   return (
     <div className="pointer-events-none absolute inset-0 flex items-center overflow-hidden px-1">
       <div className="font-code flex text-lg font-medium" style={{ wordBreak: 'break-all' }}>
         {parts.map((part, pi) => (
           <span key={pi} className="flex">
-            {pi > 0 && <span className={dotColor}>.</span>}
+            {pi > 0 && <span className="text-white/20">.</span>}
             <AnimatePresence initial={false} mode="popLayout">
               {part.split('').map((char, ci) => (
                 <motion.span
@@ -144,6 +143,7 @@ export function JwtDecoderTool() {
   }, []);
 
   useEffect(() => {
+    if (window.matchMedia("(pointer: fine)").matches)
     inputRef.current?.focus();
   }, []);
 
@@ -179,7 +179,7 @@ export function JwtDecoderTool() {
             onKeyDown={handleKeyDown}
             placeholder="eyJhbGciOiJIUzI1NiIs..."
             className={`font-code w-full bg-transparent text-center outline-none placeholder:text-white/15 ${
-              hasToken ? 'text-transparent caret-white' : 'text-white/80'
+              hasToken && input.split('.').length === 3 ? 'text-transparent caret-white' : 'text-white/80'
             } ${decoded ? 'text-sm md:text-base' : 'text-base md:text-lg'}`}
             spellCheck={false}
             autoComplete="off"

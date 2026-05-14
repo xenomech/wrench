@@ -83,6 +83,7 @@ export function HtmlEntitiesTool() {
   }, []);
 
   useEffect(() => {
+    if (window.matchMedia("(pointer: fine)").matches)
     inputRef.current?.focus();
   }, []);
 

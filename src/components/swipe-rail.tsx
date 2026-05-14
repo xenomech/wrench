@@ -51,13 +51,10 @@ export function SwipeRail({
 
   const rightOpacity = biDirectional
     ? useTransform(x, [0, safeMax * 0.3, safeMax], [0.35, 0.8, 1])
-    : useTransform(x, [0, safeMax * 0.3, safeMax * 0.6], [1, 0.5, 0]);
+    : useMotionValue(1);
   const leftOpacity = biDirectional
     ? useTransform(x, [-safeMin, -safeMin * 0.3, 0], [1, 0.8, 0.35])
     : useMotionValue(0);
-  const thumbScale = biDirectional
-    ? useTransform(x, [-safeMin, 0, safeMax], [0.92, 1, 0.92])
-    : useTransform(x, [0, safeMax], [1, 0.92]);
 
   const rightFill = useTransform(x, [0, safeMax], [0, 1]);
   const rightFillWidth = useTransform(rightFill, v => `${v * 100}%`);
@@ -65,6 +62,20 @@ export function SwipeRail({
     ? useTransform(x, [-safeMin, 0], [1, 0])
     : useMotionValue(0);
   const leftFillWidth = useTransform(leftFill, v => `${v * 100}%`);
+
+  const thumbRestPx = biDirectional
+    ? (trackWidth - THUMB_SIZE) / 2
+    : THUMB_PAD;
+  const textClipLeft = useTransform(x, v => {
+    const thumbRight = thumbRestPx + v + THUMB_SIZE + 4;
+    return `inset(0 0 0 ${thumbRight}px)`;
+  });
+  const textClipRight = biDirectional
+    ? useTransform(x, v => {
+        const thumbLeft = thumbRestPx + v - 4;
+        return `inset(0 ${trackWidth - thumbLeft}px 0 0)`;
+      })
+    : undefined;
 
   const handleDragEnd = useCallback(() => {
     const current = x.get();
@@ -99,6 +110,7 @@ export function SwipeRail({
       ref={trackRef}
       className="relative flex h-12 w-full items-center overflow-hidden rounded-2xl bg-white/[0.04]"
     >
+      {/* Fill indicators */}
       {biDirectional && (
         <motion.div
           className="absolute left-0 top-0 h-full rounded-2xl bg-white/[0.04]"
@@ -110,10 +122,11 @@ export function SwipeRail({
         style={{ width: rightFillWidth }}
       />
 
+      {/* Bidirectional: left label — clips as thumb moves left over it */}
       {biDirectional && leftLabel && (
         <motion.span
           className="pointer-events-none absolute left-4 z-10"
-          style={{ opacity: leftOpacity }}
+          style={{ opacity: leftOpacity, clipPath: textClipRight }}
         >
           <ShinyText
             text={leftLabel}
@@ -127,10 +140,11 @@ export function SwipeRail({
         </motion.span>
       )}
 
+      {/* Bidirectional: right label — clips as thumb moves right over it */}
       {rightLabel && biDirectional && (
         <motion.span
           className="pointer-events-none absolute right-4 z-10"
-          style={{ opacity: rightOpacity }}
+          style={{ opacity: rightOpacity, clipPath: textClipLeft }}
         >
           <ShinyText
             text={rightLabel}
@@ -144,10 +158,11 @@ export function SwipeRail({
         </motion.span>
       )}
 
+      {/* Single direction: centered label — clips as thumb slides right */}
       {rightLabel && !biDirectional && (
         <motion.span
           className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center"
-          style={{ opacity: rightOpacity }}
+          style={{ clipPath: textClipLeft }}
         >
           <ShinyText
             text={`Swipe to ${rightLabel}`}
@@ -161,14 +176,14 @@ export function SwipeRail({
         </motion.span>
       )}
 
+      {/* Thumb */}
       <motion.div
-        className="absolute z-20 flex touch-none items-center justify-center rounded-xl bg-white/10"
+        className="absolute z-20 flex touch-none items-center justify-center rounded-xl bg-white/15 border border-white/10"
         style={{
           width: THUMB_SIZE,
           height: THUMB_SIZE - 8,
           left: thumbLeft,
           x,
-          scale: thumbScale,
           cursor: disabled ? 'not-allowed' : 'grab',
         }}
         drag={disabled ? false : 'x'}
@@ -179,9 +194,9 @@ export function SwipeRail({
         whileTap={{ cursor: 'grabbing' }}
       >
         {biDirectional ? (
-          <ChevronsLeftRight className="h-4 w-4 text-white/40" />
+          <ChevronsLeftRight className="h-4 w-4 text-white/50" />
         ) : (
-          <ChevronRight className="h-4 w-4 text-white/40" />
+          <ChevronRight className="h-4 w-4 text-white/50" />
         )}
       </motion.div>
     </div>

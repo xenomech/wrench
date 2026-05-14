@@ -64,6 +64,7 @@ export function Base64Tool() {
   }, []);
 
   useEffect(() => {
+    if (window.matchMedia("(pointer: fine)").matches)
     inputRef.current?.focus();
   }, []);
 
