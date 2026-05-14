@@ -121,9 +121,9 @@ function AddCityButton({ onAdd, existingCodes, variant = 'icon' }: { onAdd: (cit
       <AnimatePresence>
         {open && (
           <>
-            <div className="fixed inset-0 z-40 bg-black/30 lg:bg-transparent" onClick={() => { setOpen(false); setSearch(''); }} />
+            <div className="fixed inset-0 z-[60] bg-black/30 lg:bg-transparent" onClick={() => { setOpen(false); setSearch(''); }} />
             <motion.div
-              className="fixed inset-x-0 bottom-0 z-50 rounded-t-2xl border-t border-white/[0.08] bg-[#161520] p-3 shadow-2xl lg:absolute lg:inset-x-auto lg:bottom-full lg:right-0 lg:mb-1 lg:w-[200px] lg:rounded-xl lg:border lg:p-2"
+              className="fixed inset-x-0 bottom-0 z-[70] rounded-t-2xl border-t border-white/[0.08] bg-[#161520] p-3 shadow-2xl lg:absolute lg:inset-x-auto lg:bottom-full lg:right-0 lg:mb-1 lg:w-[200px] lg:rounded-xl lg:border lg:p-2"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
@@ -136,12 +136,12 @@ function AddCityButton({ onAdd, existingCodes, variant = 'icon' }: { onAdd: (cit
                 </button>
               </div>
               <input
-                autoFocus
+                ref={el => { if (el && window.matchMedia('(pointer: fine)').matches) el.focus(); }}
                 type="text"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 placeholder="Search cities..."
-                className="font-code mb-1 w-full bg-transparent px-2 py-1.5 text-[11px] text-white/60 outline-none placeholder:text-white/20 lg:text-[11px]"
+                className="font-code mb-1 w-full bg-transparent px-2 py-1.5 text-[11px] text-white/60 outline-none placeholder:text-white/25 lg:text-[11px]"
               />
               <div className="hide-scroll max-h-[240px] overflow-auto lg:max-h-[180px]">
                 {available.length === 0 ? (

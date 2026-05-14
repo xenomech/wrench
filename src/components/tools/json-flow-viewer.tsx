@@ -96,7 +96,7 @@ export function JsonFlowViewer() {
             placeholder='{"key": "value", ...}'
             rows={8}
             className="font-code w-full resize-none rounded-xl bg-black/25 p-4 text-sm text-white/85 outline-none placeholder:text-white/25 focus:ring-1 focus:ring-white/10"
-            autoFocus
+            ref={el => { if (el && window.matchMedia('(pointer: fine)').matches) el.focus(); }}
             spellCheck={false}
           />
           <div className="flex items-center gap-3">
