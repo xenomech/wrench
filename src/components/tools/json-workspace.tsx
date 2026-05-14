@@ -234,7 +234,7 @@ export function JsonWorkspace() {
                 <button
                   key={n}
                   onClick={() => setIndent(n)}
-                  className={`font-code rounded-md px-1.5 py-0.5 text-[10px] transition-colors duration-150 ${indent === n ? 'bg-white/[0.08] text-white/60' : 'text-white/20 hover:text-white/40'}`}
+                  className={`font-code rounded-md px-2.5 py-1 text-[11px] transition-colors duration-150 ${indent === n ? 'bg-white/[0.08] text-white/60' : 'text-white/20 hover:text-white/40'}`}
                 >
                   {n}
                 </button>
