@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { Tooltip } from '@/components/tooltip';
 import { useActiveTab } from '@/components/tab-bar';
 import type { ComponentType, ReactNode } from 'react';
 
@@ -33,35 +34,33 @@ export function ToolLayout({ tools, children }: ToolLayoutProps) {
             const isActive = pathname === tool.href;
 
             return (
-              <Link
-                key={tool.id}
-                href={tool.href}
-                className="group relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-150 active:scale-90"
-                aria-label={tool.label}
-              >
-                {isActive && (
-                  <motion.div
-                    layoutId={`pill-${tools[0]!.id}`}
-                    className={`absolute inset-0 rounded-xl ${theme.bg}`}
-                    transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+              <Tooltip key={tool.id} content={tool.label} side="right">
+                <Link
+                  href={tool.href}
+                  className="group relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-150 active:scale-90"
+                  aria-label={tool.label}
+                >
+                  {isActive && (
+                    <motion.div
+                      layoutId={`pill-${tools[0]!.id}`}
+                      className={`absolute inset-0 rounded-xl ${theme.bg}`}
+                      transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                    />
+                  )}
+                  <Icon
+                    className={`relative z-10 h-[18px] w-[18px] transition-colors duration-150 ${
+                      isActive ? theme.accent : 'text-white/25 group-hover:text-white/45'
+                    }`}
                   />
-                )}
-                <Icon
-                  className={`relative z-10 h-[18px] w-[18px] transition-colors duration-150 ${
-                    isActive ? theme.accent : 'text-white/25 group-hover:text-white/45'
-                  }`}
-                />
-                {isActive && (
-                  <motion.div
-                    layoutId={`dot-${tools[0]!.id}`}
-                    className={`absolute -bottom-0.5 h-1 w-1 rounded-full ${theme.glow}`}
-                    transition={{ type: 'spring', stiffness: 500, damping: 35 }}
-                  />
-                )}
-                <span className="pointer-events-none absolute left-full z-50 ml-3 whitespace-nowrap rounded-lg bg-white/10 px-2.5 py-1.5 text-xs font-medium text-white/80 opacity-0 shadow-xl shadow-black/30 backdrop-blur-lg transition-opacity duration-100 group-hover:opacity-100">
-                  {tool.label}
-                </span>
+                  {isActive && (
+                    <motion.div
+                      layoutId={`dot-${tools[0]!.id}`}
+                      className={`absolute -bottom-0.5 h-1 w-1 rounded-full ${theme.glow}`}
+                      transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                    />
+                  )}
               </Link>
+              </Tooltip>
             );
           })}
         </nav>

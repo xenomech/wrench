@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { BracketsCurly, Lock, Fingerprint, FileText, Clock, Image } from '@phosphor-icons/react';
+import { Tooltip } from '@/components/tooltip';
 import type { ComponentType } from 'react';
 
 export type TabTheme = {
@@ -100,28 +101,26 @@ export function TabBar() {
           const isActive = activeTabId === tab.id;
 
           return (
-            <Link
-              key={tab.id}
-              href={tab.href}
-              className={`group relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-200 ${
-                isActive ? 'text-white' : 'text-white/30 hover:text-white/50'
-              }`}
-              aria-label={tab.label}
-            >
-              {isActive && (
-                <motion.div
-                  layoutId="active-tab"
-                  className={`absolute inset-0 rounded-xl ${tab.theme.activeBg} shadow-lg shadow-black/20`}
-                  transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+            <Tooltip key={tab.id} content={tab.label} side="top">
+              <Link
+                href={tab.href}
+                className={`group relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-200 ${
+                  isActive ? 'text-white' : 'text-white/30 hover:text-white/50'
+                }`}
+                aria-label={tab.label}
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="active-tab"
+                    className={`absolute inset-0 rounded-xl ${tab.theme.activeBg} shadow-lg shadow-black/20`}
+                    transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                  />
+                )}
+                <Icon
+                  className={`relative z-10 h-[18px] w-[18px] ${isActive ? tab.theme.accent : ''}`}
                 />
-              )}
-              <Icon
-                className={`relative z-10 h-[18px] w-[18px] ${isActive ? tab.theme.accent : ''}`}
-              />
-              <span className="pointer-events-none absolute bottom-full z-50 mb-2 whitespace-nowrap rounded-lg bg-white/10 px-2.5 py-1 text-xs font-medium text-white/80 opacity-0 shadow-lg shadow-black/30 backdrop-blur-lg transition-opacity duration-100 group-hover:opacity-100">
-                {tab.label}
-              </span>
-            </Link>
+              </Link>
+            </Tooltip>
           );
         })}
       </div>

@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Copy, Check } from '@phosphor-icons/react';
+import { Tooltip } from '@/components/tooltip';
 
 const HEX = '0123456789abcdef';
 const SCRAMBLE_DURATION = 600;
@@ -178,16 +179,14 @@ export function UuidGenerator() {
         </p>
         <div className="flex flex-col items-center">
           {history.map((uuid, i) => (
-            <div
-              key={uuid}
-              onClick={() => copyOne(uuid, i + 1)}
-              className="group relative cursor-pointer rounded-lg px-3 py-1 hover:bg-white/[0.03] md:py-1.5"
-            >
-              <span className="font-code text-[10px] text-white/30 md:text-xs">{uuid}</span>
-              <span className="pointer-events-none absolute -top-7 left-1/2 z-50 -translate-x-1/2 whitespace-nowrap rounded-md bg-white/10 px-2 py-0.5 text-[10px] font-medium text-white/70 opacity-0 backdrop-blur-sm transition-opacity duration-150 group-hover:opacity-100">
-                {copiedIndex === i + 1 ? 'Copied!' : 'Copy'}
-              </span>
-            </div>
+            <Tooltip key={uuid} content={copiedIndex === i + 1 ? 'Copied!' : 'Copy'} side="top">
+              <div
+                onClick={() => copyOne(uuid, i + 1)}
+                className="cursor-pointer rounded-lg px-3 py-1 hover:bg-white/[0.03] md:py-1.5"
+              >
+                <span className="font-code text-[10px] text-white/30 md:text-xs">{uuid}</span>
+              </div>
+            </Tooltip>
           ))}
         </div>
       </div>
