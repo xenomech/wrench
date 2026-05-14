@@ -1,131 +1,45 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useState, useEffect } from 'react';
+import { Command } from 'cmdk';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MagnifyingGlass, BracketsCurly, Lock, Fingerprint, FileText, Sparkle, ArrowsLeftRight, ShieldCheck, Binary, Link, Code, Key, Hash, TextAa, GitDiff, Clock } from '@phosphor-icons/react';
+import {
+  MagnifyingGlass, BracketsCurly, Lock, Fingerprint, FileText,
+  Sparkle, ArrowsLeftRight, ShieldCheck, Binary, Link, Code,
+  Key, Hash, TextAa, GitDiff, Clock,
+} from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
+import type { ComponentType } from 'react';
 
-type Command = {
+type Tool = {
   id: string;
   label: string;
   section: string;
   href: string;
-  icon: typeof BracketsCurly;
+  icon: ComponentType<any>;
   keywords: string[];
 };
 
-const commands: Command[] = [
-  {
-    id: 'json-formatter',
-    label: 'Formatter',
-    section: 'JSON',
-    href: '/json',
-    icon: Sparkle,
-    keywords: ['format', 'beautify', 'json', 'yaml', 'toml'],
-  },
-  {
-    id: 'json-converter',
-    label: 'Converter',
-    section: 'JSON',
-    href: '/json',
-    icon: ArrowsLeftRight,
-    keywords: ['convert', 'json', 'yaml', 'toml'],
-  },
-  {
-    id: 'json-validator',
-    label: 'Validator',
-    section: 'JSON',
-    href: '/json',
-    icon: ShieldCheck,
-    keywords: ['validate', 'check', 'json', 'yaml', 'toml'],
-  },
-  {
-    id: 'encode-base64',
-    label: 'Base64',
-    section: 'Encode',
-    href: '/encode',
-    icon: Binary,
-    keywords: ['base64', 'encode', 'decode'],
-  },
-  {
-    id: 'encode-url',
-    label: 'URL Encode',
-    section: 'Encode',
-    href: '/encode/url',
-    icon: Link,
-    keywords: ['url', 'encode', 'decode'],
-  },
-  {
-    id: 'encode-html',
-    label: 'HTML Entities',
-    section: 'Encode',
-    href: '/encode/html',
-    icon: Code,
-    keywords: ['html', 'entities', 'escape'],
-  },
-  {
-    id: 'encode-jwt',
-    label: 'JWT Decoder',
-    section: 'Encode',
-    href: '/encode/jwt',
-    icon: Key,
-    keywords: ['jwt', 'token', 'decode'],
-  },
-  {
-    id: 'gen-uuid',
-    label: 'UUID',
-    section: 'Generate',
-    href: '/generators',
-    icon: Fingerprint,
-    keywords: ['uuid', 'guid', 'random'],
-  },
-  {
-    id: 'gen-lorem',
-    label: 'Lorem Ipsum',
-    section: 'Generate',
-    href: '/generators/lorem',
-    icon: TextAa,
-    keywords: ['lorem', 'placeholder'],
-  },
-  {
-    id: 'gen-hash',
-    label: 'Hash',
-    section: 'Generate',
-    href: '/generators/hash',
-    icon: Hash,
-    keywords: ['hash', 'md5', 'sha'],
-  },
-  {
-    id: 'text-diff',
-    label: 'Diff',
-    section: 'Text',
-    href: '/text',
-    icon: GitDiff,
-    keywords: ['diff', 'compare'],
-  },
-  {
-    id: 'text-markdown',
-    label: 'Markdown',
-    section: 'Text',
-    href: '/text/markdown',
-    icon: FileText,
-    keywords: ['markdown', 'preview'],
-  },
-  {
-    id: 'time-clock',
-    label: 'World Clock',
-    section: 'Time',
-    href: '/time',
-    icon: Clock,
-    keywords: ['time', 'clock', 'timezone', 'world', 'convert', 'unix', 'timestamp'],
-  },
+const tools: Tool[] = [
+  { id: 'json-formatter', label: 'Formatter', section: 'JSON', href: '/json', icon: Sparkle, keywords: ['format', 'beautify', 'json', 'yaml', 'toml'] },
+  { id: 'json-converter', label: 'Converter', section: 'JSON', href: '/json', icon: ArrowsLeftRight, keywords: ['convert', 'json', 'yaml', 'toml'] },
+  { id: 'json-validator', label: 'Validator', section: 'JSON', href: '/json', icon: ShieldCheck, keywords: ['validate', 'check', 'json', 'yaml', 'toml'] },
+  { id: 'encode-base64', label: 'Base64', section: 'Encode', href: '/encode', icon: Binary, keywords: ['base64', 'encode', 'decode'] },
+  { id: 'encode-url', label: 'URL Encode', section: 'Encode', href: '/encode/url', icon: Link, keywords: ['url', 'encode', 'decode'] },
+  { id: 'encode-html', label: 'HTML Entities', section: 'Encode', href: '/encode/html', icon: Code, keywords: ['html', 'entities', 'escape'] },
+  { id: 'encode-jwt', label: 'JWT Decoder', section: 'Encode', href: '/encode/jwt', icon: Key, keywords: ['jwt', 'token', 'decode'] },
+  { id: 'gen-uuid', label: 'UUID', section: 'Generate', href: '/generators', icon: Fingerprint, keywords: ['uuid', 'guid', 'random'] },
+  { id: 'gen-lorem', label: 'Lorem Ipsum', section: 'Generate', href: '/generators/lorem', icon: TextAa, keywords: ['lorem', 'placeholder'] },
+  { id: 'gen-hash', label: 'Hash', section: 'Generate', href: '/generators/hash', icon: Hash, keywords: ['hash', 'md5', 'sha'] },
+  { id: 'text-diff', label: 'Diff', section: 'Text', href: '/text', icon: GitDiff, keywords: ['diff', 'compare'] },
+  { id: 'text-markdown', label: 'Markdown', section: 'Text', href: '/text/markdown', icon: FileText, keywords: ['markdown', 'preview'] },
+  { id: 'time-clock', label: 'World Clock', section: 'Time', href: '/time', icon: Clock, keywords: ['time', 'clock', 'timezone', 'world', 'convert', 'unix', 'timestamp'] },
 ];
+
+const sections = [...new Set(tools.map(t => t.section))];
 
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState('');
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -133,68 +47,16 @@ export function CommandPalette() {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
         setOpen(p => !p);
-        setQuery('');
-        setSelectedIndex(0);
       }
-      if (e.key === 'Escape') setOpen(false);
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, []);
 
-  useEffect(() => {
-    if (open) inputRef.current?.focus();
-  }, [open]);
-
-  const filtered = useMemo(() => {
-    if (!query.trim()) return commands;
-    const q = query.toLowerCase();
-    return commands.filter(
-      c =>
-        c.label.toLowerCase().includes(q) ||
-        c.section.toLowerCase().includes(q) ||
-        c.keywords.some(k => k.includes(q))
-    );
-  }, [query]);
-
-  useEffect(() => {
-    setSelectedIndex(0);
-  }, [filtered]);
-
-  const navigate = useCallback(
-    (href: string) => {
-      setOpen(false);
-      setQuery('');
-      router.push(href);
-    },
-    [router]
-  );
-
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        setSelectedIndex(i => (i + 1) % filtered.length);
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        setSelectedIndex(i => (i - 1 + filtered.length) % filtered.length);
-      } else if (e.key === 'Enter' && filtered[selectedIndex])
-        navigate(filtered[selectedIndex].href);
-    },
-    [filtered, selectedIndex, navigate]
-  );
-
-  const sections = useMemo(() => {
-    const map = new Map<string, Command[]>();
-    filtered.forEach(c => {
-      const arr = map.get(c.section) ?? [];
-      arr.push(c);
-      map.set(c.section, arr);
-    });
-    return map;
-  }, [filtered]);
-
-  let flatIndex = 0;
+  const navigate = (href: string) => {
+    setOpen(false);
+    router.push(href);
+  };
 
   return (
     <AnimatePresence>
@@ -217,47 +79,56 @@ export function CommandPalette() {
             exit={{ opacity: 0, scale: 0.96, y: -6 }}
             transition={{ duration: 0.12, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
-            <div className="flex items-center gap-3 border-b border-white/[0.06] px-4">
-              <MagnifyingGlass weight="duotone" className="h-4 w-4 text-white/25" />
-              <input
-                ref={inputRef}
-                value={query}
-                onChange={e => setQuery(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Search tools..."
-                className="h-11 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-white/25"
-              />
-            </div>
-            <div className="hide-scroll max-h-[280px] overflow-auto p-1.5">
-              {filtered.length === 0 ? (
-                <p className="py-8 text-center text-sm text-white/25">No results</p>
-              ) : (
-                Array.from(sections.entries()).map(([section, cmds]) => (
-                  <div key={section}>
-                    <p className="px-3 pb-1 pt-3 text-[10px] font-semibold uppercase tracking-widest text-white/20">
-                      {section}
-                    </p>
-                    {cmds.map(cmd => {
-                      const idx = flatIndex++;
-                      const Icon = cmd.icon;
-                      return (
-                        <button
-                          key={cmd.id}
-                          onClick={() => navigate(cmd.href)}
-                          onMouseEnter={() => setSelectedIndex(idx)}
-                          className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] transition-colors duration-75 ${
-                            selectedIndex === idx ? 'bg-white/[0.08] text-white' : 'text-white/40'
-                          }`}
-                        >
-                          <Icon className="h-4 w-4" />
-                          <span className="font-medium">{cmd.label}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                ))
-              )}
-            </div>
+            <Command
+              className="flex flex-col"
+              filter={(value, search) => {
+                const tool = tools.find(t => t.id === value);
+                if (!tool) return 0;
+                const q = search.toLowerCase();
+                if (tool.label.toLowerCase().includes(q)) return 1;
+                if (tool.section.toLowerCase().includes(q)) return 0.8;
+                if (tool.keywords.some(k => k.includes(q))) return 0.6;
+                return 0;
+              }}
+            >
+              <div className="flex items-center gap-3 border-b border-white/[0.06] px-4">
+                <MagnifyingGlass weight="duotone" className="h-4 w-4 text-white/25" />
+                <Command.Input
+                  placeholder="Search tools..."
+                  className="h-11 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-white/25"
+                  autoFocus
+                />
+              </div>
+              <Command.List className="hide-scroll max-h-[280px] overflow-auto p-1.5">
+                <Command.Empty className="py-8 text-center text-sm text-white/25">
+                  No results
+                </Command.Empty>
+                {sections.map(section => (
+                  <Command.Group
+                    key={section}
+                    heading={section}
+                    className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:pt-3 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-widest [&_[cmdk-group-heading]]:text-white/20"
+                  >
+                    {tools
+                      .filter(t => t.section === section)
+                      .map(tool => {
+                        const Icon = tool.icon;
+                        return (
+                          <Command.Item
+                            key={tool.id}
+                            value={tool.id}
+                            onSelect={() => navigate(tool.href)}
+                            className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-white/40 transition-colors duration-75 data-[selected=true]:bg-white/[0.08] data-[selected=true]:text-white"
+                          >
+                            <Icon weight="duotone" className="h-4 w-4" />
+                            <span className="font-medium">{tool.label}</span>
+                          </Command.Item>
+                        );
+                      })}
+                  </Command.Group>
+                ))}
+              </Command.List>
+            </Command>
           </motion.div>
         </motion.div>
       )}

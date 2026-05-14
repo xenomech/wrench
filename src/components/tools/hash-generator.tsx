@@ -70,9 +70,9 @@ export function HashGenerator() {
   const hasInput = input.trim().length > 0;
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col items-center">
       <div
-        className={`flex flex-col items-center justify-center transition-all duration-300 ${hashes ? 'py-4' : 'flex-1'}`}
+        className={`flex w-full max-w-3xl flex-col items-center justify-center transition-all duration-300 ${hashes ? 'py-4' : 'flex-1'}`}
       >
         {!hasInput && !hashes && (
           <motion.p
@@ -124,7 +124,7 @@ export function HashGenerator() {
       <AnimatePresence>
         {hashes && (
           <motion.div
-            className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto pt-2"
+            className="flex min-h-0 w-full max-w-3xl flex-1 flex-col gap-3 overflow-auto pt-2"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 16 }}
