@@ -113,21 +113,21 @@ function CityList({ available, onSelect }: { available: CityZone[]; onSelect: (c
         value={search}
         onChange={e => setSearch(e.target.value)}
         placeholder="Search cities..."
-        className="font-code mb-1 w-full bg-transparent px-2 py-1.5 text-[11px] text-white/60 outline-none placeholder:text-white/25"
+        className="font-code mb-2 w-full bg-transparent px-3 py-2.5 text-[12px] text-white/60 outline-none placeholder:text-white/25 lg:mb-1 lg:px-2 lg:py-1.5 lg:text-[11px]"
       />
-      <div className="hide-scroll max-h-[240px] overflow-auto lg:max-h-[180px]">
+      <div className="hide-scroll max-h-[280px] overflow-auto lg:max-h-[180px]">
         {filtered.length === 0 ? (
-          <p className="px-2 py-3 text-center text-[10px] text-white/30">No results</p>
+          <p className="px-3 py-4 text-center text-[11px] text-white/30">No results</p>
         ) : (
           filtered.map(c => (
             <button
               key={c.code}
               onClick={() => onSelect(c)}
-              className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left transition-colors hover:bg-white/[0.05] lg:py-1.5"
+              className="flex min-h-[44px] w-full items-center gap-2.5 rounded-lg px-3 py-3 text-left transition-colors hover:bg-white/[0.05] lg:min-h-0 lg:px-2 lg:py-1.5"
             >
-              <span className="font-code text-[10px] font-bold text-white/40">{c.code}</span>
-              <span className="truncate text-[10px] text-white/30">{c.label}</span>
-              <span className="ml-auto truncate text-[9px] text-white/15">{c.tz}</span>
+              <span className="font-code text-[11px] font-bold text-white/40 lg:text-[10px]">{c.code}</span>
+              <span className="truncate text-[11px] text-white/30 lg:text-[10px]">{c.label}</span>
+              <span className="ml-auto truncate text-[10px] text-white/15 lg:text-[9px]">{c.tz}</span>
             </button>
           ))
         )}
