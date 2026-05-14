@@ -172,28 +172,24 @@ export function UuidGenerator() {
         </div>
       </div>
 
-      <div className="w-full max-w-lg shrink-0 pb-2 md:pb-4">
-        {history.length > 0 && (
-          <>
-            <p className="mb-1 text-center text-[10px] uppercase tracking-widest text-white/15 md:mb-2">
-              Previous
-            </p>
-            <div className="flex flex-col items-center">
-              {history.map((uuid, i) => (
-                <div
-                  key={uuid}
-                  onClick={() => copyOne(uuid, i + 1)}
-                  className="group relative cursor-pointer rounded-lg px-3 py-1 hover:bg-white/[0.03] md:py-1.5"
-                >
-                  <span className="font-code text-[10px] text-white/30 md:text-xs">{uuid}</span>
-                  <span className="pointer-events-none absolute -top-7 left-1/2 z-50 -translate-x-1/2 whitespace-nowrap rounded-md bg-white/10 px-2 py-0.5 text-[10px] font-medium text-white/70 opacity-0 backdrop-blur-sm transition-opacity duration-150 group-hover:opacity-100">
-                    {copiedIndex === i + 1 ? 'Copied!' : 'Copy'}
-                  </span>
-                </div>
-              ))}
+      <div className="h-[100px] w-full max-w-lg shrink-0 pb-2 md:h-[120px] md:pb-4">
+        <p className={`mb-1 text-center text-[10px] uppercase tracking-widest transition-opacity duration-200 md:mb-2 ${history.length > 0 ? 'text-white/15' : 'text-transparent'}`}>
+          Previous
+        </p>
+        <div className="flex flex-col items-center">
+          {history.map((uuid, i) => (
+            <div
+              key={uuid}
+              onClick={() => copyOne(uuid, i + 1)}
+              className="group relative cursor-pointer rounded-lg px-3 py-1 hover:bg-white/[0.03] md:py-1.5"
+            >
+              <span className="font-code text-[10px] text-white/30 md:text-xs">{uuid}</span>
+              <span className="pointer-events-none absolute -top-7 left-1/2 z-50 -translate-x-1/2 whitespace-nowrap rounded-md bg-white/10 px-2 py-0.5 text-[10px] font-medium text-white/70 opacity-0 backdrop-blur-sm transition-opacity duration-150 group-hover:opacity-100">
+                {copiedIndex === i + 1 ? 'Copied!' : 'Copy'}
+              </span>
             </div>
-          </>
-        )}
+          ))}
+        </div>
       </div>
     </div>
   );

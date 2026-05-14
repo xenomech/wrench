@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import { TabBar } from "@/components/tab-bar";
+import { TopBar } from "@/components/top-bar";
 import { Providers } from "@/components/providers";
 import "@/styles/globals.scss";
 
@@ -35,11 +36,9 @@ export default function RootLayout({
       <body className={`${jakarta.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
         <Providers>
           <div className="bg-canvas flex h-[100dvh] flex-col overflow-hidden">
+            <TopBar />
             <main className="flex min-h-0 flex-1">{children}</main>
             <TabBar />
-            <footer className="shrink-0 pb-[max(0.5rem,env(safe-area-inset-bottom))] text-center text-[10px] text-white/15">
-              built with <span className="text-red-400/50">&#9829;</span> wrenchkit
-            </footer>
           </div>
         </Providers>
       </body>

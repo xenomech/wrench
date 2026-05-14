@@ -18,6 +18,7 @@ import {
   Hash,
   Type,
   GitCompareArrows,
+  Clock,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -126,6 +127,14 @@ const commands: Command[] = [
     href: '/text/markdown',
     icon: FileText,
     keywords: ['markdown', 'preview'],
+  },
+  {
+    id: 'time-clock',
+    label: 'World Clock',
+    section: 'Time',
+    href: '/time',
+    icon: Clock,
+    keywords: ['time', 'clock', 'timezone', 'world', 'convert', 'unix', 'timestamp'],
   },
 ];
 

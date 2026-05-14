@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Braces, Lock, Fingerprint, FileText } from 'lucide-react';
+import { Braces, Lock, Fingerprint, FileText, Clock } from 'lucide-react';
 import type { ComponentType } from 'react';
 
 export type TabTheme = {
@@ -43,6 +43,13 @@ export const TAB_THEMES: Record<string, TabTheme> = {
     glow: 'bg-sky-500',
     gradientFrom: 'from-sky-600/8',
   },
+  time: {
+    bg: 'bg-pink-500/8',
+    activeBg: 'bg-pink-500/15',
+    accent: 'text-pink-300',
+    glow: 'bg-pink-500',
+    gradientFrom: 'from-pink-600/8',
+  },
 };
 
 type Tab = {
@@ -61,6 +68,7 @@ const tabs: Tab[] = [
     icon: Fingerprint,
     theme: TAB_THEMES.generators!,
   },
+  { id: 'time', label: 'Time', href: '/time', icon: Clock, theme: TAB_THEMES.time! },
   { id: 'json', label: 'JSON', href: '/json', icon: Braces, theme: TAB_THEMES.json! },
   { id: 'encode', label: 'Encode', href: '/encode', icon: Lock, theme: TAB_THEMES.encode! },
   { id: 'text', label: 'Text', href: '/text', icon: FileText, theme: TAB_THEMES.text! },
@@ -77,7 +85,7 @@ export function TabBar() {
   const activeTabId = tabs.find(t => pathname.startsWith(t.href))?.id ?? 'generators';
 
   return (
-    <nav className="relative z-30 flex items-center justify-center px-4 pb-3 pt-1">
+    <nav className="relative z-30 flex items-center justify-center px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-1">
       <div className="flex items-center gap-0.5 rounded-2xl bg-white/[0.04] p-1 md:gap-1">
         {tabs.map(tab => {
           const Icon = tab.icon;
