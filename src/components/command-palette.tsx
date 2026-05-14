@@ -35,6 +35,7 @@ const tools: Tool[] = [
   { id: 'text-markdown', label: 'Markdown', section: 'Text', href: '/text/markdown', icon: FileText, keywords: ['markdown', 'preview'] },
   { id: 'time-clock', label: 'World Clock', section: 'Time', href: '/time', icon: Clock, keywords: ['time', 'clock', 'timezone', 'world', 'convert', 'unix', 'timestamp'] },
   { id: 'assets-favicon', label: 'Favicon Generator', section: 'Assets', href: '/assets', icon: Image, keywords: ['favicon', 'icon', 'image', 'png', 'ico', 'apple', 'android'] },
+  { id: 'assets-screenshot', label: 'Screenshot Editor', section: 'Assets', href: '/assets/screenshots', icon: Image, keywords: ['screenshot', 'beautify', 'mockup', 'gradient', 'frame', 'export'] },
 ];
 
 const sections = [...new Set(tools.map(t => t.section))];
