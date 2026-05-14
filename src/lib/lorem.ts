@@ -30,7 +30,7 @@ export function generateWords(count: number): string {
 
 export function generateSentences(count: number): string {
   return Array.from({ length: count }, () => {
-    const len = 8 + Math.floor(Math.random() * 12);
+    const len = 6 + Math.floor(Math.random() * 8);
     const words = Array.from({ length: len }, () => pick());
     words[0] = capitalize(words[0]!);
     return words.join(' ') + '.';
@@ -39,7 +39,7 @@ export function generateSentences(count: number): string {
 
 export function generateParagraphs(count: number): string {
   return Array.from({ length: count }, () => {
-    const sentences = 3 + Math.floor(Math.random() * 5);
+    const sentences = 2 + Math.floor(Math.random() * 3);
     return generateSentences(sentences);
   }).join('\n\n');
 }
