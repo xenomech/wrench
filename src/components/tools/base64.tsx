@@ -105,7 +105,7 @@ export function Base64Tool() {
 
         {hasInput && !hasOutput && (
           <motion.div
-            className="mt-4 hidden items-center gap-3 text-[11px] uppercase tracking-widest text-white/15 md:flex"
+            className="mt-4 hidden items-center gap-3 text-[11px] uppercase tracking-widest text-white/15 lg:flex"
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
           >
@@ -161,7 +161,7 @@ export function Base64Tool() {
 
       {hasInput && !hasOutput && (
         <motion.div
-          className="shrink-0 px-4 pb-4 md:hidden"
+          className="shrink-0 px-4 pb-4 lg:hidden"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
         >

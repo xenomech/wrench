@@ -89,7 +89,6 @@ export function LoremGenerator() {
             >
               {words.map((word, i) => {
                 if (/^\s+$/.test(word)) return <span key={i}>{word}</span>;
-                if (i > 40) return <span key={i} className="text-white/80">{word}</span>;
                 return (
                   <motion.span
                     key={`${generation}-${i}`}
@@ -97,8 +96,8 @@ export function LoremGenerator() {
                     initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{
-                      delay: i * 0.008,
-                      duration: 0.12,
+                      delay: i * 0.005,
+                      duration: 0.1,
                       ease: [0.25, 0.46, 0.45, 0.94],
                     }}
                   >
@@ -126,8 +125,8 @@ export function LoremGenerator() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          <span className="hidden md:inline">Space to regenerate</span>
-          <span className="md:hidden">Tap to regenerate</span>
+          <span className="hidden lg:inline">Space to regenerate</span>
+          <span className="lg:hidden">Tap to regenerate</span>
         </motion.p>
       </div>
     </div>

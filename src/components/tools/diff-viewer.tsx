@@ -112,7 +112,7 @@ function HighlightedPane({
   const hasHighlights = highlights && highlights.length > 0 && value.trim();
 
   return (
-    <div className="flex min-h-[120px] flex-1 flex-col gap-2 md:min-h-[250px]">
+    <div className="flex min-h-[120px] flex-1 flex-col gap-2 md:min-h-[150px] lg:min-h-[250px]">
       <span className="text-xs font-medium uppercase tracking-wider text-white/35">{label}</span>
       <div className="relative flex-1">
         {hasHighlights && (
@@ -227,7 +227,7 @@ export function DiffViewer() {
         </div>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-4 md:flex-row">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 lg:flex-row">
         <HighlightedPane
           value={original}
           onChange={setOriginal}

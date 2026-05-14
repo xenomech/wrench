@@ -56,7 +56,7 @@ const SEGMENT_LABELS = ['time-low', 'mid', 'hi', 'seq', 'node'] as const;
 
 function UuidBlock({ char }: { char: string }) {
   return (
-    <span className="font-code inline-flex h-7 w-[18px] items-center justify-center rounded bg-white/[0.05] text-xs tabular-nums text-white/90 md:h-11 md:w-8 md:rounded-lg md:text-lg">
+    <span className="font-code inline-flex h-7 w-[18px] items-center justify-center rounded bg-white/[0.05] text-xs tabular-nums text-white/90 md:h-9 md:w-6 md:text-sm lg:h-11 lg:w-8 lg:rounded-lg lg:text-lg">
       {char}
     </span>
   );
@@ -107,9 +107,9 @@ export function UuidGenerator() {
     <div className="flex h-full flex-col items-center">
       <div className="flex flex-1 flex-col items-center justify-center">
         <div className="flex flex-col items-center gap-6">
-          {/* Mobile: stacked segments with labels */}
+          {/* Mobile + Tablet: stacked segments with labels */}
           <div
-            className="flex flex-col gap-2.5 active:scale-[0.97] md:hidden"
+            className="flex flex-col gap-2.5 active:scale-[0.97] lg:hidden"
             onClick={generate}
           >
             {current &&
@@ -132,7 +132,7 @@ export function UuidGenerator() {
 
           {/* Desktop: inline blocks with labels below */}
           <div
-            className="hidden flex-col items-center gap-6 md:flex"
+            className="hidden flex-col items-center gap-6 lg:flex"
           >
             <div className="flex items-center gap-[3px]">
               {current &&
@@ -166,8 +166,8 @@ export function UuidGenerator() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
           >
-            <span className="hidden md:inline">Space to regenerate</span>
-            <span className="md:hidden">Tap to regenerate</span>
+            <span className="hidden lg:inline">Space to regenerate</span>
+            <span className="lg:hidden">Tap to regenerate</span>
           </motion.p>
         </div>
       </div>

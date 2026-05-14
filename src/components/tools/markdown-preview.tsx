@@ -77,9 +77,9 @@ export function MarkdownPreview() {
         )}
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-4 md:flex-row">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 lg:flex-row">
         <motion.div
-          className="flex min-h-[150px] flex-col gap-2 md:min-h-[300px]"
+          className="flex min-h-[150px] flex-col gap-2 md:min-h-[200px] lg:min-h-[300px]"
           layout
           animate={{ flex: hasPreview ? '1 1 0%' : '1 1 100%' }}
           transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
@@ -98,7 +98,7 @@ export function MarkdownPreview() {
         <AnimatePresence>
           {hasPreview && (
             <motion.div
-              className="flex min-h-[150px] min-w-0 flex-col gap-2 overflow-hidden md:min-h-[300px]"
+              className="flex min-h-[150px] min-w-0 flex-col gap-2 overflow-hidden md:min-h-[200px] lg:min-h-[300px]"
               initial={{ flex: '0 0 0%', opacity: 0 }}
               animate={{ flex: '1 1 0%', opacity: 1 }}
               exit={{ flex: '0 0 0%', opacity: 0 }}

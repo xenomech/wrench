@@ -194,7 +194,7 @@ export function JsonWorkspace() {
   ];
 
   return (
-    <div className="flex h-full flex-col gap-0 md:flex-row md:items-stretch">
+    <div className="flex h-full flex-col gap-0 lg:flex-row lg:items-stretch">
       {/* Source column */}
       <motion.div
         className="flex min-h-0 flex-col gap-2"
@@ -297,7 +297,7 @@ export function JsonWorkspace() {
           matchCount={srcMatchCount}
         />
 
-        <div className="min-h-[120px] flex-1 md:min-h-0">
+        <div className="min-h-[120px] flex-1 lg:min-h-0">
           <CodeEditor
             value={input}
             onChange={handleChange}
@@ -313,7 +313,7 @@ export function JsonWorkspace() {
       <AnimatePresence>
         {hasInput && (
           <motion.div
-            className="hidden items-center px-2 md:flex"
+            className="hidden items-center px-2 lg:flex"
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.5 }}
@@ -328,7 +328,7 @@ export function JsonWorkspace() {
       <AnimatePresence>
         {hasInput && (
           <motion.div
-            className="flex min-h-0 min-w-0 flex-col gap-2 overflow-hidden pt-3 md:pt-0"
+            className="flex min-h-0 min-w-0 flex-col gap-2 overflow-hidden pt-3 lg:pt-0"
             initial={{ flex: '0 0 0%', opacity: 0 }}
             animate={{ flex: '1 1 0%', opacity: 1 }}
             exit={{ flex: '0 0 0%', opacity: 0 }}
@@ -389,9 +389,9 @@ export function JsonWorkspace() {
               readOnly
             />
 
-            <div className="min-h-[120px] flex-1 md:min-h-0">
+            <div className="min-h-[120px] flex-1 lg:min-h-0">
               {activeTab === 'flow' ? (
-                <div className="h-full min-h-[150px] overflow-hidden rounded-xl bg-black/15 md:min-h-[250px]">
+                <div className="h-full min-h-[150px] overflow-hidden rounded-xl bg-black/15 lg:min-h-[250px]">
                   <JsonFlowPreview json={input} />
                 </div>
               ) : activeOutput ? (

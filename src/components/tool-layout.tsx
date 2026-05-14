@@ -70,7 +70,7 @@ export function ToolLayout({ tools, children }: ToolLayoutProps) {
       {/* Content area */}
       <div className="relative z-10 min-h-0 flex-1 overflow-auto p-3 pb-0 md:pb-3">
         <div
-          className={`relative h-full overflow-hidden rounded-2xl bg-gradient-to-br ${theme.gradientFrom} to-white/[0.02] p-4 md:p-6`}
+          className={`relative h-full overflow-hidden rounded-2xl bg-gradient-to-br ${theme.gradientFrom} to-white/[0.02] p-4 md:p-5 lg:p-6`}
         >
           <motion.div
             key={activeId}
@@ -85,7 +85,7 @@ export function ToolLayout({ tools, children }: ToolLayoutProps) {
       </div>
 
       {/* Invisible right spacer to center content */}
-      <div className="hidden w-[60px] shrink-0 md:block" />
+      <div className="hidden w-[40px] shrink-0 md:block lg:w-[60px]" />
 
       {/* Mobile bottom bar */}
       <div className="relative z-20 flex items-center justify-center gap-1 px-4 py-2 md:hidden">

@@ -190,7 +190,7 @@ export function JwtDecoderTool() {
 
         {hasToken && !decoded && (
           <motion.p
-            className="mt-4 hidden text-[11px] uppercase tracking-widest text-white/15 md:block"
+            className="mt-4 hidden text-[11px] uppercase tracking-widest text-white/15 lg:block"
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
           >
@@ -240,7 +240,7 @@ export function JwtDecoderTool() {
               </motion.div>
             )}
 
-            <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 md:grid-cols-2">
+            <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-2">
               <JsonBlock label="Header" value={decoded.header} color="text-violet-400/60" />
               <JsonBlock label="Payload" value={decoded.payload} color="text-amber-400/60" />
             </div>
@@ -267,7 +267,7 @@ export function JwtDecoderTool() {
 
       {hasToken && !decoded && (
         <motion.div
-          className="shrink-0 px-4 pb-4 md:hidden"
+          className="shrink-0 px-4 pb-4 lg:hidden"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
         >

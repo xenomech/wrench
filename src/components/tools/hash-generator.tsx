@@ -102,7 +102,7 @@ export function HashGenerator() {
 
         {hasInput && !hashes && (
           <motion.p
-            className="mt-4 hidden text-[11px] uppercase tracking-widest text-white/15 md:block"
+            className="mt-4 hidden text-[11px] uppercase tracking-widest text-white/15 lg:block"
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
           >
@@ -165,7 +165,7 @@ export function HashGenerator() {
 
       {hasInput && !hashes && (
         <motion.div
-          className="shrink-0 px-4 pb-4 md:hidden"
+          className="shrink-0 px-4 pb-4 lg:hidden"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
         >
