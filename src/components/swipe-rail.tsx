@@ -2,7 +2,7 @@
 
 import { useRef, useCallback, useState, useEffect } from 'react';
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
-import { ChevronRight, ChevronsLeftRight } from 'lucide-react';
+import { ChevronRight, GripVertical } from 'lucide-react';
 import { ShinyText } from '@/components/shiny-text';
 
 type SwipeRailProps = {
@@ -13,9 +13,9 @@ type SwipeRailProps = {
   disabled?: boolean;
 };
 
-const THUMB_SIZE = 44;
-const THUMB_PAD = 4;
-const COMPLETE_THRESHOLD = 0.6;
+const THUMB = 48;
+const PAD = 6;
+const THRESHOLD = 0.6;
 
 export function SwipeRail({
   leftLabel,
@@ -25,178 +25,152 @@ export function SwipeRail({
   disabled = false,
 }: SwipeRailProps) {
   const trackRef = useRef<HTMLDivElement>(null);
+  const [trackW, setTrackW] = useState(0);
   const x = useMotionValue(0);
-
-  const biDirectional = !!onSwipeLeft && !!onSwipeRight;
-
-  const [trackWidth, setTrackWidth] = useState(0);
+  const biDir = !!onSwipeLeft && !!onSwipeRight;
 
   useEffect(() => {
     const el = trackRef.current;
     if (!el) return;
-    setTrackWidth(el.offsetWidth);
-    const observer = new ResizeObserver(([entry]) => {
-      if (entry) setTrackWidth(entry.contentRect.width);
-    });
-    observer.observe(el);
-    return () => observer.disconnect();
+    setTrackW(el.offsetWidth);
+    const ro = new ResizeObserver(([e]) => { if (e) setTrackW(e.contentRect.width); });
+    ro.observe(el);
+    return () => ro.disconnect();
   }, []);
 
-  const fullTravel = Math.max(0, trackWidth - THUMB_SIZE - THUMB_PAD * 2);
-  const maxRight = biDirectional ? fullTravel / 2 : fullTravel;
-  const maxLeft = biDirectional ? fullTravel / 2 : 0;
+  const travel = Math.max(0, trackW - THUMB - PAD * 2);
+  const maxR = biDir ? travel / 2 : travel;
+  const maxL = biDir ? travel / 2 : 0;
+  const thumbRest = biDir ? (trackW - THUMB) / 2 : PAD;
 
-  const safeMax = Math.max(1, maxRight);
-  const safeMin = Math.max(1, maxLeft);
+  const thumbRightEdge = useTransform(x, v => thumbRest + v + THUMB);
+  const thumbLeftEdge = useTransform(x, v => thumbRest + v);
 
-  const rightOpacity = biDirectional
-    ? useTransform(x, [0, safeMax * 0.3, safeMax], [0.35, 0.8, 1])
-    : useMotionValue(1);
-  const leftOpacity = biDirectional
-    ? useTransform(x, [-safeMin, -safeMin * 0.3, 0], [1, 0.8, 0.35])
-    : useMotionValue(0);
+  const rightClip = useTransform(thumbRightEdge, px => `inset(0 0 0 ${px}px)`);
+  const leftClip = useTransform(thumbLeftEdge, px => `inset(0 ${trackW - px}px 0 0)`);
 
-  const rightFill = useTransform(x, [0, safeMax], [0, 1]);
-  const rightFillWidth = useTransform(rightFill, v => `${v * 100}%`);
-  const leftFill = biDirectional
-    ? useTransform(x, [-safeMin, 0], [1, 0])
-    : useMotionValue(0);
-  const leftFillWidth = useTransform(leftFill, v => `${v * 100}%`);
+  const sR = Math.max(1, maxR);
+  const sL = Math.max(1, maxL);
+  const rightFillW = useTransform(x, [0, sR], ['0%', '100%']);
+  const leftFillW = biDir
+    ? useTransform(x, [-sL, 0], ['100%', '0%'])
+    : useMotionValue('0%');
 
-  const thumbRestPx = biDirectional
-    ? (trackWidth - THUMB_SIZE) / 2
-    : THUMB_PAD;
-  const textClipLeft = useTransform(x, v => {
-    const thumbRight = thumbRestPx + v + THUMB_SIZE + 4;
-    return `inset(0 0 0 ${thumbRight}px)`;
+  const thumbGlow = useTransform(x, v => {
+    const ratio = biDir ? Math.abs(v) / sR : v / sR;
+    return Math.min(ratio * 0.4, 0.4);
   });
-  const textClipRight = biDirectional
-    ? useTransform(x, v => {
-        const thumbLeft = thumbRestPx + v - 4;
-        return `inset(0 ${trackWidth - thumbLeft}px 0 0)`;
-      })
-    : undefined;
+  const thumbShadow = useTransform(thumbGlow, g =>
+    `0 0 ${g * 40}px rgba(255,255,255,${g}), 0 2px 8px rgba(0,0,0,0.4)`
+  );
 
   const handleDragEnd = useCallback(() => {
-    const current = x.get();
-
-    if (maxRight > 0 && current / maxRight >= COMPLETE_THRESHOLD && onSwipeRight) {
-      animate(x, maxRight, {
-        type: 'spring', stiffness: 500, damping: 30,
-        onComplete: () => {
-          animate(x, 0, { type: 'spring', stiffness: 400, damping: 28 });
-          onSwipeRight();
-        },
-      });
-    } else if (biDirectional && maxLeft > 0 && current / -maxLeft >= COMPLETE_THRESHOLD && onSwipeLeft) {
-      animate(x, -maxLeft, {
-        type: 'spring', stiffness: 500, damping: 30,
-        onComplete: () => {
-          animate(x, 0, { type: 'spring', stiffness: 400, damping: 28 });
-          onSwipeLeft();
-        },
-      });
+    const cur = x.get();
+    if (maxR > 0 && cur / maxR >= THRESHOLD && onSwipeRight) {
+      animate(x, maxR, { type: 'spring', stiffness: 500, damping: 30, onComplete: () => {
+        animate(x, 0, { type: 'spring', stiffness: 400, damping: 28 });
+        onSwipeRight();
+      }});
+    } else if (biDir && maxL > 0 && cur / -maxL >= THRESHOLD && onSwipeLeft) {
+      animate(x, -maxL, { type: 'spring', stiffness: 500, damping: 30, onComplete: () => {
+        animate(x, 0, { type: 'spring', stiffness: 400, damping: 28 });
+        onSwipeLeft();
+      }});
     } else {
       animate(x, 0, { type: 'spring', stiffness: 500, damping: 35 });
     }
-  }, [x, maxRight, maxLeft, biDirectional, onSwipeLeft, onSwipeRight]);
-
-  const thumbLeft = biDirectional
-    ? `calc(50% - ${THUMB_SIZE / 2}px)`
-    : `${THUMB_PAD}px`;
+  }, [x, maxR, maxL, biDir, onSwipeLeft, onSwipeRight]);
 
   return (
     <div
       ref={trackRef}
-      className="relative flex h-12 w-full items-center overflow-hidden rounded-2xl bg-white/[0.04]"
+      className="relative flex w-full items-center overflow-hidden rounded-full"
+      style={{
+        height: 52,
+        background: 'linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.04) 100%)',
+        boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(255,255,255,0.05)',
+      }}
     >
-      {/* Fill indicators */}
-      {biDirectional && (
+      {/* Fill bars */}
+      {biDir && (
         <motion.div
-          className="absolute left-0 top-0 h-full rounded-2xl bg-white/[0.04]"
-          style={{ width: leftFillWidth }}
+          className="absolute left-0 top-0 h-full"
+          style={{
+            width: leftFillW,
+            background: 'linear-gradient(90deg, rgba(255,255,255,0.06) 0%, transparent 100%)',
+          }}
         />
       )}
       <motion.div
-        className="absolute right-0 top-0 h-full rounded-2xl bg-white/[0.04]"
-        style={{ width: rightFillWidth }}
+        className="absolute right-0 top-0 h-full"
+        style={{
+          width: rightFillW,
+          background: biDir
+            ? 'linear-gradient(270deg, rgba(255,255,255,0.06) 0%, transparent 100%)'
+            : 'linear-gradient(270deg, rgba(255,255,255,0.04) 0%, transparent 100%)',
+        }}
       />
 
-      {/* Bidirectional: left label — clips as thumb moves left over it */}
-      {biDirectional && leftLabel && (
-        <motion.span
-          className="pointer-events-none absolute left-4 z-10"
-          style={{ opacity: leftOpacity, clipPath: textClipRight }}
+      {/* Right label */}
+      {rightLabel && (
+        <motion.div
+          className={`pointer-events-none absolute inset-0 z-10 flex items-center ${biDir ? 'justify-end pr-5' : 'justify-center'}`}
+          style={{ clipPath: rightClip }}
         >
           <ShinyText
-            text={leftLabel}
+            text={biDir ? `Swipe right to ${rightLabel}` : `Swipe to ${rightLabel}`}
             speed={3}
-            color="rgba(255,255,255,0.25)"
-            shineColor="rgba(255,255,255,0.6)"
+            color="rgba(255,255,255,0.2)"
+            shineColor="rgba(255,255,255,0.5)"
+            spread={120}
+            direction="left"
+            className="text-[10px] font-semibold uppercase tracking-[0.15em]"
+          />
+        </motion.div>
+      )}
+
+      {/* Left label */}
+      {biDir && leftLabel && (
+        <motion.div
+          className="pointer-events-none absolute inset-0 z-10 flex items-center justify-start pl-5"
+          style={{ clipPath: leftClip }}
+        >
+          <ShinyText
+            text={`Swipe left to ${leftLabel}`}
+            speed={3}
+            color="rgba(255,255,255,0.2)"
+            shineColor="rgba(255,255,255,0.5)"
             spread={120}
             direction="right"
-            className="text-[11px] font-medium uppercase tracking-widest"
+            className="text-[10px] font-semibold uppercase tracking-[0.15em]"
           />
-        </motion.span>
-      )}
-
-      {/* Bidirectional: right label — clips as thumb moves right over it */}
-      {rightLabel && biDirectional && (
-        <motion.span
-          className="pointer-events-none absolute right-4 z-10"
-          style={{ opacity: rightOpacity, clipPath: textClipLeft }}
-        >
-          <ShinyText
-            text={rightLabel}
-            speed={3}
-            color="rgba(255,255,255,0.25)"
-            shineColor="rgba(255,255,255,0.6)"
-            spread={120}
-            direction="left"
-            className="text-[11px] font-medium uppercase tracking-widest"
-          />
-        </motion.span>
-      )}
-
-      {/* Single direction: centered label — clips as thumb slides right */}
-      {rightLabel && !biDirectional && (
-        <motion.span
-          className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center"
-          style={{ clipPath: textClipLeft }}
-        >
-          <ShinyText
-            text={`Swipe to ${rightLabel}`}
-            speed={3}
-            color="rgba(255,255,255,0.25)"
-            shineColor="rgba(255,255,255,0.6)"
-            spread={120}
-            direction="left"
-            className="text-[11px] font-medium uppercase tracking-widest"
-          />
-        </motion.span>
+        </motion.div>
       )}
 
       {/* Thumb */}
       <motion.div
-        className="absolute z-20 flex touch-none items-center justify-center rounded-xl bg-white/15 border border-white/10"
+        className="absolute z-20 flex touch-none items-center justify-center rounded-full"
         style={{
-          width: THUMB_SIZE,
-          height: THUMB_SIZE - 8,
-          left: thumbLeft,
+          width: THUMB,
+          height: THUMB - 8,
+          left: biDir ? `calc(50% - ${THUMB / 2}px)` : `${PAD}px`,
           x,
+          background: 'linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.06) 100%)',
+          boxShadow: thumbShadow,
+          border: '1px solid rgba(255,255,255,0.1)',
           cursor: disabled ? 'not-allowed' : 'grab',
         }}
         drag={disabled ? false : 'x'}
-        dragConstraints={trackRef}
+        dragConstraints={{ left: biDir ? -maxL : 0, right: maxR }}
         dragElastic={0}
         dragMomentum={false}
         onDragEnd={handleDragEnd}
-        whileTap={{ cursor: 'grabbing' }}
+        whileTap={{ cursor: 'grabbing', scale: 0.96 }}
       >
-        {biDirectional ? (
-          <ChevronsLeftRight className="h-4 w-4 text-white/50" />
+        {biDir ? (
+          <GripVertical className="h-4 w-4 text-white/40" />
         ) : (
-          <ChevronRight className="h-4 w-4 text-white/50" />
+          <ChevronRight className="h-4 w-4 text-white/40" />
         )}
       </motion.div>
     </div>
