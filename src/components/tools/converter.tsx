@@ -127,7 +127,7 @@ export function Converter() {
           animate={{ flex: hasOutput ? '1 1 0%' : '1 1 100%' }}
           transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
-          <span className="text-[11px] uppercase tracking-widest text-white/25">
+          <span className="text-[11px] uppercase tracking-widest text-white/40">
             {fromFormat.toUpperCase()}
           </span>
           <div className="relative flex-1">
@@ -155,7 +155,7 @@ export function Converter() {
               transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
             >
               <div className="flex items-center justify-between">
-                <span className="text-[11px] uppercase tracking-widest text-white/25">
+                <span className="text-[11px] uppercase tracking-widest text-white/40">
                   {toFormat.toUpperCase()}
                 </span>
                 <button

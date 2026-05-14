@@ -91,7 +91,7 @@ export function HtmlEntitiesTool() {
       >
         {!hasInput && !hasOutput && (
           <motion.p
-            className="mb-6 text-xs uppercase tracking-widest text-white/20"
+            className="mb-6 text-xs uppercase tracking-widest text-white/35"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
@@ -112,7 +112,7 @@ export function HtmlEntitiesTool() {
             onKeyDown={handleKeyDown}
             placeholder='<div class="test"> or &amp;lt; entities...'
             rows={hasOutput ? 2 : 3}
-            className="font-code w-full resize-none bg-transparent text-center text-base text-white/85 outline-none placeholder:text-white/15 md:text-lg"
+            className="font-code w-full resize-none bg-transparent text-center text-base text-white/85 outline-none placeholder:text-white/25 md:text-lg"
             spellCheck={false}
           />
         </div>

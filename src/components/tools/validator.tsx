@@ -74,7 +74,7 @@ export function Validator() {
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col gap-1.5">
-        <span className="text-[11px] uppercase tracking-widest text-white/25">Input</span>
+        <span className="text-[11px] uppercase tracking-widest text-white/40">Input</span>
         <div className="relative flex-1">
           <CodeEditor
             value={input}

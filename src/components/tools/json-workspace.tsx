@@ -380,7 +380,7 @@ export function JsonWorkspace() {
                 />
               ) : (
                 <div className="flex h-full items-center justify-center rounded-xl bg-black/15">
-                  <p className="text-[11px] text-white/15">Cannot convert — check input syntax</p>
+                  <p className="text-[11px] text-white/30">Cannot convert — check input syntax</p>
                 </div>
               )}
             </div>

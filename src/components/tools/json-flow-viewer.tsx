@@ -88,14 +88,14 @@ export function JsonFlowViewer() {
     return (
       <div className="flex h-full flex-col items-center justify-center">
         <div className="flex w-full max-w-lg flex-col items-center gap-4">
-          <p className="text-xs uppercase tracking-widest text-white/20">Paste JSON to visualize</p>
+          <p className="text-xs uppercase tracking-widest text-white/35">Paste JSON to visualize</p>
           <textarea
             value={input}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             placeholder='{"key": "value", ...}'
             rows={8}
-            className="font-code w-full resize-none rounded-xl bg-black/25 p-4 text-sm text-white/85 outline-none placeholder:text-white/15 focus:ring-1 focus:ring-white/10"
+            className="font-code w-full resize-none rounded-xl bg-black/25 p-4 text-sm text-white/85 outline-none placeholder:text-white/25 focus:ring-1 focus:ring-white/10"
             autoFocus
             spellCheck={false}
           />
@@ -107,7 +107,7 @@ export function JsonFlowViewer() {
               <FileCode weight="duotone" className="h-3 w-3" /> Load sample
             </button>
             <span className="text-[10px] text-white/10">·</span>
-            <span className="text-[10px] text-white/15">⌘⏎ to visualize</span>
+            <span className="text-[10px] text-white/30">⌘⏎ to visualize</span>
           </div>
         </div>
       </div>

@@ -112,7 +112,7 @@ function AddCityButton({ onAdd, existingCodes, variant = 'icon' }: { onAdd: (cit
         onClick={() => setOpen(!open)}
         className={variant === 'empty'
           ? 'flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-white/[0.08] py-6 text-[10px] uppercase tracking-widest text-white/20 transition-colors hover:border-white/[0.15] hover:text-white/35'
-          : 'text-white/15 transition-colors hover:text-white/35'
+          : 'flex h-7 w-7 items-center justify-center rounded-md text-white/15 transition-colors hover:bg-white/[0.04] hover:text-white/35'
         }
       >
         <Plus weight="duotone" className={variant === 'empty' ? 'h-4 w-4' : 'h-3.5 w-3.5'} />
@@ -130,7 +130,7 @@ function AddCityButton({ onAdd, existingCodes, variant = 'icon' }: { onAdd: (cit
               transition={{ duration: 0.15 }}
             >
               <div className="mb-2 flex items-center justify-between lg:hidden">
-                <span className="text-[10px] font-semibold uppercase tracking-widest text-white/25">Add City</span>
+                <span className="text-[10px] font-semibold uppercase tracking-widest text-white/40">Add City</span>
                 <button onClick={() => { setOpen(false); setSearch(''); }} className="text-white/20">
                   <X weight="duotone" className="h-4 w-4" />
                 </button>
@@ -180,12 +180,12 @@ function PrefsPanel({ onClose }: { onClose: () => void }) {
     >
       <div className="p-4">
       <div className="mb-4 flex items-center justify-between">
-        <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/25">Preferences</span>
+        <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40">Preferences</span>
         <button onClick={onClose} className="text-white/20 transition-colors hover:text-white/50"><X weight="duotone" className="h-3.5 w-3.5" /></button>
       </div>
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
-          <span className="text-[11px] text-white/35">Time format</span>
+          <span className="text-[11px] text-white/50">Time format</span>
           <div className="flex gap-0.5 rounded-lg bg-black/20 p-0.5">
             {(['12h', '24h'] as const).map(f => (
               <button key={f} onClick={() => setTimeFormat(f)}
@@ -200,7 +200,7 @@ function PrefsPanel({ onClose }: { onClose: () => void }) {
           </div>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-[11px] text-white/35">Date format</span>
+          <span className="text-[11px] text-white/50">Date format</span>
           <div className="flex gap-0.5 rounded-lg bg-black/20 p-0.5">
             {(['short', 'long', 'iso'] as const).map(f => (
               <button key={f} onClick={() => setDateFormat(f)}
@@ -215,7 +215,7 @@ function PrefsPanel({ onClose }: { onClose: () => void }) {
           </div>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-[11px] text-white/35">Show seconds</span>
+          <span className="text-[11px] text-white/50">Show seconds</span>
           <div className="flex gap-0.5 rounded-lg bg-black/20 p-0.5">
             {(['On', 'Off'] as const).map(v => {
               const isActive = (v === 'On') === showSeconds;
@@ -250,7 +250,7 @@ function ConverterRow({ label, value }: { label: string; value: string }) {
   };
   return (
     <div onClick={copy} className="group flex cursor-pointer items-center gap-3 rounded-lg px-2 py-1.5 transition-colors hover:bg-white/[0.03]">
-      <span className="w-10 text-[10px] font-semibold uppercase tracking-widest text-white/20">{label}</span>
+      <span className="w-10 text-[10px] font-semibold uppercase tracking-widest text-white/35">{label}</span>
       <span className="font-code flex-1 truncate text-[12px] text-white/50 group-hover:text-white/70">{value}</span>
       {copied ? <Check weight="duotone" className="h-3 w-3 shrink-0 text-emerald-400" /> : <Copy weight="duotone" className="h-3 w-3 shrink-0 text-white/0 group-hover:text-white/25" />}
     </div>
@@ -286,7 +286,7 @@ export function TimeTool() {
   const dateStr = fnsFormat(now, datePatterns[dateFormat]);
 
   return (
-    <div className="flex h-full flex-col items-center overflow-auto">
+    <div className="hide-scroll flex h-full flex-col items-center overflow-auto">
       {/* Hero clock */}
       <div className="flex shrink-0 flex-col items-center justify-center gap-4 py-6 md:flex-1 md:py-0">
         <div className="font-code text-[2.8rem] font-medium tracking-tight text-white/90 md:text-7xl lg:text-[5.5rem]">
@@ -295,7 +295,7 @@ export function TimeTool() {
         <div className="flex flex-col items-center gap-1 md:flex-row md:gap-2">
           <span className="font-code text-[9px] tabular-nums uppercase tracking-[0.2em] text-white/15 md:text-[10px]">{dateStr}</span>
           <span className="hidden h-2.5 w-px bg-white/10 md:block" />
-          <span className="font-code text-[9px] uppercase tracking-[0.2em] text-white/10 md:text-[10px] md:text-white/15">{tz}</span>
+          <span className="font-code text-[9px] uppercase tracking-[0.2em] text-white/10 md:text-[10px] md:text-white/30">{tz}</span>
         </div>
       </div>
 
@@ -304,10 +304,10 @@ export function TimeTool() {
         {/* World time */}
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between px-1">
-            <span className="text-[10px] uppercase tracking-widest text-white/15">World Time</span>
-            <div className="flex items-center gap-2">
+            <span className="text-[10px] uppercase tracking-widest text-white/30">World Time</span>
+            <div className="flex items-center gap-1">
               <AddCityButton onAdd={addCity} existingCodes={cities.map(c => c.code)} />
-              <button onClick={() => setPrefsOpen(p => !p)} className="text-white/15 transition-colors hover:text-white/35">
+              <button onClick={() => setPrefsOpen(p => !p)} className="flex h-7 w-7 items-center justify-center rounded-md text-white/15 transition-colors hover:bg-white/[0.04] hover:text-white/35">
                 <GearSix weight="duotone" className="h-3.5 w-3.5" />
               </button>
             </div>
@@ -400,7 +400,7 @@ export function TimeTool() {
 
         {/* Converter */}
         <div className="flex flex-col gap-2">
-          <span className="px-1 text-[10px] uppercase tracking-widest text-white/15">Converter</span>
+          <span className="px-1 text-[10px] uppercase tracking-widest text-white/30">Converter</span>
           <div className="rounded-lg bg-white/[0.02] p-3">
             <div className="flex items-center gap-2">
               <input
@@ -408,7 +408,7 @@ export function TimeTool() {
                 value={converterInput}
                 onChange={e => setConverterInput(e.target.value)}
                 placeholder="Unix, ISO, or date string..."
-                className="font-code flex-1 bg-transparent text-[11px] text-white/60 outline-none placeholder:text-white/12 md:text-[12px]"
+                className="font-code flex-1 bg-transparent text-[11px] text-white/60 outline-none placeholder:text-white/25 md:text-[12px]"
               />
               <button onClick={handleNow} className="flex items-center gap-1 text-[9px] font-semibold uppercase tracking-widest text-white/15 transition-colors hover:text-white/40">
                 <ArrowCounterClockwise weight="duotone" className="h-3 w-3" /> Now

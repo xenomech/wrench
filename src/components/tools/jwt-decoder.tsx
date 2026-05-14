@@ -158,7 +158,7 @@ export function JwtDecoderTool() {
       >
         {showHint && (
           <motion.p
-            className="mb-6 text-xs uppercase tracking-widest text-white/20"
+            className="mb-6 text-xs uppercase tracking-widest text-white/35"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
@@ -178,7 +178,7 @@ export function JwtDecoderTool() {
             }}
             onKeyDown={handleKeyDown}
             placeholder="eyJhbGciOiJIUzI1NiIs..."
-            className={`font-code w-full bg-transparent text-center outline-none placeholder:text-white/15 ${
+            className={`font-code w-full bg-transparent text-center outline-none placeholder:text-white/25 ${
               hasToken && input.split('.').length === 3 ? 'text-transparent caret-white' : 'text-white/80'
             } ${decoded ? 'text-sm md:text-base' : 'text-base md:text-lg'}`}
             spellCheck={false}
@@ -212,12 +212,13 @@ export function JwtDecoderTool() {
       <AnimatePresence>
         {decoded && (
           <motion.div
-            className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto pt-2"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 16 }}
-            transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="min-h-0 flex-1"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
           >
+            <div className="hide-scroll flex h-full flex-col gap-3 overflow-auto pt-2">
             {decoded.expiry && (
               <motion.div
                 className={`mx-auto flex items-center gap-2.5 rounded-full px-5 py-2 text-[13px] font-medium ${
@@ -261,6 +262,7 @@ export function JwtDecoderTool() {
                 {decoded.signature}
               </p>
             </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

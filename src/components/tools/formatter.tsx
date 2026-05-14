@@ -155,7 +155,7 @@ export function Formatter() {
           animate={{ flex: hasOutput ? '1 1 0%' : '1 1 100%' }}
           transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
-          <span className="text-[11px] uppercase tracking-widest text-white/25">Input</span>
+          <span className="text-[11px] uppercase tracking-widest text-white/40">Input</span>
           <div className="relative flex-1">
             <CodeEditor
               value={input}
@@ -181,7 +181,7 @@ export function Formatter() {
               transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
             >
               <div className="flex items-center justify-between">
-                <span className="text-[11px] uppercase tracking-widest text-white/25">
+                <span className="text-[11px] uppercase tracking-widest text-white/40">
                   {outputView === 'flow' ? 'Flow' : 'Output'}
                 </span>
                 {outputView === 'code' && (

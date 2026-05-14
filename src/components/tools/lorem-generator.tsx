@@ -105,7 +105,7 @@ export function LoremGenerator() {
         <CopyButton text={output} label="Copy" copiedLabel="Copied" size="sm" className="flex items-center gap-1.5 text-xs text-white/25 transition-colors duration-150 hover:text-white/50" />
 
         <motion.p
-          className="text-[11px] uppercase tracking-widest text-white/15"
+          className="text-[11px] uppercase tracking-widest text-white/30"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}

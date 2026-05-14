@@ -42,7 +42,7 @@ export function JsonFlowPreview({ json }: { json: string }) {
   if (!json.trim() || initialNodes.length === 0) {
     return (
       <div className="flex h-full items-center justify-center">
-        <p className="text-[11px] text-white/15">Flow preview</p>
+        <p className="text-[11px] text-white/30">Flow preview</p>
       </div>
     );
   }

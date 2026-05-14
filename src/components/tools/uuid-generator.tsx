@@ -115,7 +115,7 @@ export function UuidGenerator() {
             {current &&
               current.split('-').map((segment, si) => (
                 <div key={si} className="flex items-center gap-3">
-                  <span className="w-16 text-right text-[10px] uppercase tracking-widest text-white/20">
+                  <span className="w-16 text-right text-[10px] uppercase tracking-widest text-white/35">
                     {SEGMENT_LABELS[si]}
                   </span>
                   <div className="flex gap-[2px]">
@@ -138,12 +138,12 @@ export function UuidGenerator() {
               {current &&
                 current.split('').map((char, i) => {
                   if (char === '-') {
-                    return <span key={i} className="font-code mx-1 text-2xl text-white/15">-</span>;
+                    return <span key={i} className="font-code mx-1 text-2xl text-white/30">-</span>;
                   }
                   return <UuidBlock key={i} char={scrambled[i] ?? char} />;
                 })}
             </div>
-            <div className="flex items-center gap-6 text-[10px] uppercase tracking-widest text-white/15">
+            <div className="flex items-center gap-6 text-[10px] uppercase tracking-widest text-white/30">
               {SEGMENT_LABELS.map(label => (
                 <span key={label}>{label}</span>
               ))}
@@ -161,7 +161,7 @@ export function UuidGenerator() {
           </div>
 
           <motion.p
-            className="text-[11px] uppercase tracking-widest text-white/15"
+            className="text-[11px] uppercase tracking-widest text-white/30"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}

@@ -38,7 +38,7 @@ function DropZone({ onFile }: { onFile: (file: File) => void }) {
       <Image weight="duotone" className="h-10 w-10 text-white/15" />
       <div className="flex flex-col items-center gap-1 text-center">
         <p className="text-sm text-white/40">Drop image or click to upload</p>
-        <p className="text-[10px] uppercase tracking-widest text-white/15">PNG, JPG, SVG, WebP &middot; 512x512 recommended</p>
+        <p className="text-[10px] uppercase tracking-widest text-white/30">PNG, JPG, SVG, WebP &middot; 512x512 recommended</p>
       </div>
       <input
         ref={inputRef}
@@ -59,7 +59,7 @@ function PreviewCard({ label, src, size }: { label: string; src: string; size: s
       </div>
       <div className="text-center">
         <p className="font-code text-[10px] text-white/40">{size}</p>
-        <p className="text-[9px] uppercase tracking-widest text-white/20">{label}</p>
+        <p className="text-[9px] uppercase tracking-widest text-white/35">{label}</p>
       </div>
     </div>
   );
@@ -140,7 +140,7 @@ export function FaviconTool() {
             animate={{ rotate: 360 }}
             transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
           />
-          <p className="text-[11px] uppercase tracking-widest text-white/20">Generating favicons...</p>
+          <p className="text-[11px] uppercase tracking-widest text-white/35">Generating favicons...</p>
         </div>
       )}
 
@@ -180,7 +180,7 @@ export function FaviconTool() {
 
             {/* Browser tab preview */}
             <div className="flex flex-col gap-2">
-              <span className="px-1 text-[10px] uppercase tracking-widest text-white/15">Preview</span>
+              <span className="px-1 text-[10px] uppercase tracking-widest text-white/30">Preview</span>
               <div className="grid gap-2 md:grid-cols-2 md:gap-3">
                 <BrowserTabPreview src={result.previews.get('favicon-32x32.png')!} />
                 <div className="flex items-center justify-center gap-6 rounded-lg border border-white/[0.06] bg-white/[0.02] p-3 md:p-4">
@@ -202,7 +202,7 @@ export function FaviconTool() {
 
             {/* Generated sizes grid */}
             <div className="flex flex-col gap-2">
-              <span className="px-1 text-[10px] uppercase tracking-widest text-white/15">Generated Files</span>
+              <span className="px-1 text-[10px] uppercase tracking-widest text-white/30">Generated Files</span>
               <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-3 lg:grid-cols-6">
                 {[
                   { name: 'favicon-16x16.png', label: 'Favicon', size: '16' },
@@ -225,7 +225,7 @@ export function FaviconTool() {
             {/* HTML Markup */}
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between px-1">
-                <span className="text-[10px] uppercase tracking-widest text-white/15">HTML Markup</span>
+                <span className="text-[10px] uppercase tracking-widest text-white/30">HTML Markup</span>
                 <CopyButton text={htmlMarkup} label="Copy" copiedLabel="Copied" size="sm" className="flex items-center gap-1 text-[10px] text-white/20 transition-colors hover:text-white/40" />
               </div>
               <pre className="font-code whitespace-pre-wrap break-all rounded-lg bg-white/[0.02] p-2 text-[9px] leading-relaxed text-white/40 md:break-normal md:p-3 md:text-[11px]">
