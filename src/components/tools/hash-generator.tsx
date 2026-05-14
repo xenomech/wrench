@@ -166,7 +166,7 @@ export function HashGenerator() {
 
       {hasInput && !hashes && (
         <motion.div
-          className="shrink-0 px-4 pb-4 lg:hidden"
+          className="w-full max-w-sm shrink-0 px-4 pb-4 lg:hidden"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
         >
