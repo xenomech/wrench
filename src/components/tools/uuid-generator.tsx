@@ -1,12 +1,11 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useMotionValue, useTransform, animate } from 'framer-motion';
-import { Copy, Check, ChevronUp } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Copy, Check } from 'lucide-react';
 
 const HEX = '0123456789abcdef';
 const SCRAMBLE_DURATION = 600;
-const SWIPE_THRESHOLD = -50;
 
 function generateUUID(): string {
   try {
@@ -21,7 +20,6 @@ function generateUUID(): string {
 
 function useScrambleReveal(target: string, trigger: number) {
   const [display, setDisplay] = useState(target);
-  const frameRef = useRef<number>(0);
 
   useEffect(() => {
     if (!target) return;
@@ -54,16 +52,12 @@ function useScrambleReveal(target: string, trigger: number) {
   return display;
 }
 
-function UuidBlock({ char, revealed, index }: { char: string; revealed: string; index: number }) {
-  const isDash = char === '-';
+const SEGMENT_LABELS = ['time-low', 'mid', 'hi', 'seq', 'node'] as const;
 
-  if (isDash) {
-    return <span className="font-code mx-0.5 text-base text-white/15 md:mx-1 md:text-2xl">-</span>;
-  }
-
+function UuidBlock({ char }: { char: string }) {
   return (
-    <span className="font-code inline-flex h-8 w-5 items-center justify-center rounded bg-white/[0.05] text-sm tabular-nums text-white/90 md:h-11 md:w-8 md:rounded-lg md:text-lg">
-      {revealed}
+    <span className="font-code inline-flex h-7 w-[18px] items-center justify-center rounded bg-white/[0.05] text-xs tabular-nums text-white/90 md:h-11 md:w-8 md:rounded-lg md:text-lg">
+      {char}
     </span>
   );
 }
@@ -75,19 +69,6 @@ export function UuidGenerator() {
   const [generation, setGeneration] = useState(0);
   const currentRef = useRef(current);
   currentRef.current = current;
-
-  const [isMobile, setIsMobile] = useState(false);
-  const y = useMotionValue(0);
-  const scale = useTransform(y, [-80, 0], [0.95, 1]);
-  const hintOpacity = useTransform(y, [-60, -20, 0], [1, 0.6, 0.3]);
-
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 767px)');
-    setIsMobile(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
-  }, []);
 
   useEffect(() => {
     setCurrent(generateUUID());
@@ -114,23 +95,6 @@ export function UuidGenerator() {
     return () => window.removeEventListener('keydown', handler);
   }, [generate]);
 
-  const handleDragEnd = useCallback(() => {
-    const current = y.get();
-    if (current <= SWIPE_THRESHOLD) {
-      animate(y, -100, {
-        type: 'spring',
-        stiffness: 500,
-        damping: 30,
-        onComplete: () => {
-          generate();
-          animate(y, 0, { type: 'spring', stiffness: 400, damping: 28 });
-        },
-      });
-    } else {
-      animate(y, 0, { type: 'spring', stiffness: 500, damping: 35 });
-    }
-  }, [y, generate]);
-
   const copyOne = useCallback(async (uuid: string, i: number) => {
     await navigator.clipboard.writeText(uuid);
     setCopiedIndex(i);
@@ -142,37 +106,53 @@ export function UuidGenerator() {
   return (
     <div className="flex h-full flex-col items-center">
       <div className="flex flex-1 flex-col items-center justify-center">
-        <motion.div
-          className="flex flex-col items-center gap-6 md:cursor-default"
-          style={{ y, scale }}
-          drag={isMobile ? 'y' : false}
-          dragConstraints={{ top: -120, bottom: 0 }}
-          dragElastic={0.15}
-          dragMomentum={false}
-          onDragEnd={handleDragEnd}
-        >
-          {/* UUID blocks */}
-          <div className="flex flex-wrap items-center justify-center gap-[2px] md:gap-[3px]">
+        <div className="flex flex-col items-center gap-6">
+          {/* Mobile: stacked segments with labels */}
+          <div
+            className="flex flex-col gap-2.5 active:scale-[0.97] md:hidden"
+            onClick={generate}
+          >
             {current &&
-              current
-                .split('')
-                .map((char, i) => (
-                  <UuidBlock key={i} char={char} revealed={scrambled[i] ?? char} index={i} />
-                ))}
+              current.split('-').map((segment, si) => (
+                <div key={si} className="flex items-center gap-3">
+                  <span className="w-16 text-right text-[10px] uppercase tracking-widest text-white/20">
+                    {SEGMENT_LABELS[si]}
+                  </span>
+                  <div className="flex gap-[2px]">
+                    {segment.split('').map((char, ci) => (
+                      <UuidBlock
+                        key={ci}
+                        char={scrambled ? scrambled.split('-')[si]?.[ci] ?? char : char}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
           </div>
 
-          {/* Segment labels */}
-          <div className="flex items-center gap-6 text-[10px] uppercase tracking-widest text-white/15">
-            <span>time-low</span>
-            <span>mid</span>
-            <span>hi</span>
-            <span>seq</span>
-            <span>node</span>
+          {/* Desktop: inline blocks with labels below */}
+          <div
+            className="hidden flex-col items-center gap-6 md:flex"
+          >
+            <div className="flex items-center gap-[3px]">
+              {current &&
+                current.split('').map((char, i) => {
+                  if (char === '-') {
+                    return <span key={i} className="font-code mx-1 text-2xl text-white/15">-</span>;
+                  }
+                  return <UuidBlock key={i} char={scrambled[i] ?? char} />;
+                })}
+            </div>
+            <div className="flex items-center gap-6 text-[10px] uppercase tracking-widest text-white/15">
+              {SEGMENT_LABELS.map(label => (
+                <span key={label}>{label}</span>
+              ))}
+            </div>
           </div>
 
           <div className="flex items-center gap-3">
             <button
-              onClick={() => copyOne(current, 0)}
+              onClick={(e) => { e.stopPropagation(); copyOne(current, 0); }}
               className="flex items-center gap-1.5 text-xs text-white/25 transition-colors duration-150 hover:text-white/50"
             >
               {copiedIndex === 0 ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
@@ -180,19 +160,16 @@ export function UuidGenerator() {
             </button>
           </div>
 
-          <motion.div
-            className="flex flex-col items-center gap-1 text-[11px] uppercase tracking-widest text-white/15"
+          <motion.p
+            className="text-[11px] uppercase tracking-widest text-white/15"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
           >
             <span className="hidden md:inline">Space to regenerate</span>
-            <motion.span className="flex items-center gap-1 md:hidden" style={{ opacity: hintOpacity }}>
-              <ChevronUp className="h-3 w-3" />
-              Swipe up to regenerate
-            </motion.span>
-          </motion.div>
-        </motion.div>
+            <span className="md:hidden">Tap to regenerate</span>
+          </motion.p>
+        </div>
       </div>
 
       <div className="h-[120px] w-full max-w-lg shrink-0 pb-4 md:h-[160px]">
@@ -207,7 +184,7 @@ export function UuidGenerator() {
                   key={uuid}
                   className="group flex items-center gap-3 rounded-lg px-3 py-1.5 hover:bg-white/[0.03]"
                 >
-                  <span className="font-code text-xs text-white/30">{uuid}</span>
+                  <span className="font-code text-[10px] text-white/30 md:text-xs">{uuid}</span>
                   <button
                     onClick={() => copyOne(uuid, i + 1)}
                     className="text-white/0 transition-colors duration-150 hover:!text-white/50 group-hover:text-white/25"

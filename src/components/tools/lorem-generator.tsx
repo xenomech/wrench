@@ -1,32 +1,17 @@
 'use client';
 
-import { useState, useCallback, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useMotionValue, useTransform, animate } from 'framer-motion';
-import { Copy, Check, ChevronUp } from 'lucide-react';
+import { useState, useCallback, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Copy, Check } from 'lucide-react';
 import { generateWords, generateSentences, generateParagraphs } from '@/lib/lorem';
 
 type Unit = 'words' | 'sentences' | 'paragraphs';
-
-const SWIPE_THRESHOLD = -50;
 
 export function LoremGenerator() {
   const [unit, setUnit] = useState<Unit>('sentences');
   const [output, setOutput] = useState('');
   const [generation, setGeneration] = useState(0);
   const [copied, setCopied] = useState(false);
-
-  const [isMobile, setIsMobile] = useState(false);
-  const y = useMotionValue(0);
-  const scale = useTransform(y, [-80, 0], [0.97, 1]);
-  const hintOpacity = useTransform(y, [-60, -20, 0], [1, 0.6, 0.3]);
-
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 767px)');
-    setIsMobile(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
-  }, []);
 
   const generate = useCallback(() => {
     let text = '';
@@ -63,23 +48,6 @@ export function LoremGenerator() {
     return () => window.removeEventListener('keydown', handler);
   }, [generate]);
 
-  const handleDragEnd = useCallback(() => {
-    const current = y.get();
-    if (current <= SWIPE_THRESHOLD) {
-      animate(y, -100, {
-        type: 'spring',
-        stiffness: 500,
-        damping: 30,
-        onComplete: () => {
-          generate();
-          animate(y, 0, { type: 'spring', stiffness: 400, damping: 28 });
-        },
-      });
-    } else {
-      animate(y, 0, { type: 'spring', stiffness: 500, damping: 35 });
-    }
-  }, [y, generate]);
-
   const handleCopy = useCallback(async () => {
     if (!output) return;
     await navigator.clipboard.writeText(output);
@@ -105,14 +73,9 @@ export function LoremGenerator() {
         ))}
       </div>
 
-      <motion.div
-        className="flex flex-1 items-center justify-center px-4 md:px-8"
-        style={{ y, scale }}
-        drag={isMobile ? 'y' : false}
-        dragConstraints={{ top: -120, bottom: 0 }}
-        dragElastic={0.15}
-        dragMomentum={false}
-        onDragEnd={handleDragEnd}
+      <div
+        className="flex flex-1 items-center justify-center px-4 active:scale-[0.99] md:px-8 md:active:scale-100"
+        onClick={generate}
       >
         <div className="max-w-2xl text-center">
           <AnimatePresence mode="wait">
@@ -146,7 +109,7 @@ export function LoremGenerator() {
             </motion.div>
           </AnimatePresence>
         </div>
-      </motion.div>
+      </div>
 
       <div className="flex flex-col items-center gap-3 pb-4">
         <button
@@ -157,18 +120,15 @@ export function LoremGenerator() {
           {copied ? 'Copied' : 'Copy'}
         </button>
 
-        <motion.div
+        <motion.p
           className="text-[11px] uppercase tracking-widest text-white/15"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
           <span className="hidden md:inline">Space to regenerate</span>
-          <motion.span className="flex items-center gap-1 md:hidden" style={{ opacity: hintOpacity }}>
-            <ChevronUp className="h-3 w-3" />
-            Swipe up to regenerate
-          </motion.span>
-        </motion.div>
+          <span className="md:hidden">Tap to regenerate</span>
+        </motion.p>
       </div>
     </div>
   );
