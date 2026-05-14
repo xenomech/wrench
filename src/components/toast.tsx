@@ -26,7 +26,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={{ toast }}>
       {children}
-      <div className="pointer-events-none fixed right-4 top-4 z-50 flex flex-col items-end gap-2">
+      <div className="pointer-events-none fixed inset-x-0 top-4 z-50 flex flex-col items-center gap-2 md:inset-x-auto md:right-4 md:items-end">
         <AnimatePresence>
           {toasts.map(t => {
             const ok = t.status === 'success';
