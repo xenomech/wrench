@@ -127,6 +127,14 @@ export function FaviconTool() {
     <div className="flex h-full flex-col items-center overflow-auto">
       {!result && !loading && (
         <div className="flex flex-1 flex-col items-center justify-center px-4">
+          <motion.p
+            className="mb-6 text-xs uppercase tracking-widest text-white/35"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            Drop or upload an image to generate favicon
+          </motion.p>
           <div className="w-full max-w-lg">
             <DropZone onFile={handleFile} />
           </div>
