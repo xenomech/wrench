@@ -36,7 +36,7 @@ function DropZone({ onFile }: { onFile: (file: File) => void }) {
       onClick={() => inputRef.current?.click()}
     >
       <Image weight="duotone" className="h-10 w-10 text-white/15" />
-      <div className="flex flex-col items-center gap-1">
+      <div className="flex flex-col items-center gap-1 text-center">
         <p className="text-sm text-white/40">Drop image or click to upload</p>
         <p className="text-[10px] uppercase tracking-widest text-white/15">PNG, JPG, SVG, WebP &middot; 512x512 recommended</p>
       </div>
@@ -68,18 +68,18 @@ function PreviewCard({ label, src, size }: { label: string; src: string; size: s
 function BrowserTabPreview({ src }: { src: string }) {
   return (
     <div className="overflow-hidden rounded-lg border border-white/[0.06]">
-      <div className="flex items-center gap-2 bg-white/[0.03] px-3 py-2">
-        <div className="flex gap-1.5">
-          <div className="h-2.5 w-2.5 rounded-full bg-white/[0.06]" />
-          <div className="h-2.5 w-2.5 rounded-full bg-white/[0.06]" />
-          <div className="h-2.5 w-2.5 rounded-full bg-white/[0.06]" />
+      <div className="flex items-center gap-2 bg-white/[0.03] px-2 py-1.5 md:px-3 md:py-2">
+        <div className="flex gap-1">
+          <div className="h-2 w-2 rounded-full bg-white/[0.06] md:h-2.5 md:w-2.5" />
+          <div className="h-2 w-2 rounded-full bg-white/[0.06] md:h-2.5 md:w-2.5" />
+          <div className="h-2 w-2 rounded-full bg-white/[0.06] md:h-2.5 md:w-2.5" />
         </div>
-        <div className="flex items-center gap-2 rounded-md bg-white/[0.04] px-2.5 py-1">
-          <img src={src} alt="favicon" className="h-3.5 w-3.5" />
-          <span className="text-[10px] text-white/30">My Website</span>
+        <div className="flex items-center gap-1.5 rounded-md bg-white/[0.04] px-2 py-0.5 md:gap-2 md:px-2.5 md:py-1">
+          <img src={src} alt="favicon" className="h-3 w-3 md:h-3.5 md:w-3.5" />
+          <span className="text-[9px] text-white/30 md:text-[10px]">My Website</span>
         </div>
       </div>
-      <div className="h-16 bg-white/[0.01]" />
+      <div className="h-10 bg-white/[0.01] md:h-16" />
     </div>
   );
 }
@@ -147,34 +147,33 @@ export function FaviconTool() {
       <AnimatePresence>
         {result && (
           <motion.div
-            className="w-full max-w-3xl space-y-6 px-4 py-6"
+            className="w-full max-w-3xl space-y-5 px-0 py-4 md:space-y-6 md:px-4 md:py-6"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25 }}
           >
             {/* Original + warning */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex min-w-0 items-center gap-2 md:gap-3">
                 {originalPreview && (
-                  <img src={originalPreview} alt="Original" className="h-10 w-10 rounded-lg" />
+                  <img src={originalPreview} alt="Original" className="h-8 w-8 shrink-0 rounded-lg md:h-10 md:w-10" />
                 )}
-                <div>
-                  <p className="text-xs text-white/40">
+                <div className="min-w-0">
+                  <p className="text-[11px] text-white/40 md:text-xs">
                     {result.originalSize.width} &times; {result.originalSize.height}
                   </p>
                   {isSmall && (
-                    <div className="flex items-center gap-1 text-[10px] text-amber-400/60">
-                      <Warning weight="duotone" className="h-3 w-3" />
-                      512x512 recommended for best quality
-                    </div>
+                    <p className="text-[9px] text-amber-400/60 md:text-[10px]">
+                      512x512 recommended
+                    </p>
                   )}
                 </div>
               </div>
               <button
                 onClick={handleReset}
-                className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-white/20 transition-colors hover:text-white/40"
+                className="flex shrink-0 items-center gap-1 text-[9px] uppercase tracking-widest text-white/20 transition-colors hover:text-white/40 md:gap-1.5 md:text-[10px]"
               >
-                <ArrowCounterClockwise weight="duotone" className="h-3.5 w-3.5" />
+                <ArrowCounterClockwise weight="duotone" className="h-3 w-3 md:h-3.5 md:w-3.5" />
                 New
               </button>
             </div>
@@ -182,18 +181,18 @@ export function FaviconTool() {
             {/* Browser tab preview */}
             <div className="flex flex-col gap-2">
               <span className="px-1 text-[10px] uppercase tracking-widest text-white/15">Preview</span>
-              <div className="grid gap-3 md:grid-cols-2">
+              <div className="grid gap-2 md:grid-cols-2 md:gap-3">
                 <BrowserTabPreview src={result.previews.get('favicon-32x32.png')!} />
-                <div className="flex items-center justify-center gap-4 rounded-lg border border-white/[0.06] bg-white/[0.02] p-4">
+                <div className="flex items-center justify-center gap-6 rounded-lg border border-white/[0.06] bg-white/[0.02] p-3 md:p-4">
                   <div className="flex flex-col items-center gap-1">
-                    <div className="rounded-2xl bg-white/[0.06] p-3">
-                      <img src={result.previews.get('apple-touch-icon.png')!} alt="iOS" className="h-14 w-14 rounded-xl" />
+                    <div className="rounded-2xl bg-white/[0.06] p-2 md:p-3">
+                      <img src={result.previews.get('apple-touch-icon.png')!} alt="iOS" className="h-10 w-10 rounded-lg md:h-14 md:w-14 md:rounded-xl" />
                     </div>
                     <span className="text-[9px] text-white/20">iOS</span>
                   </div>
                   <div className="flex flex-col items-center gap-1">
-                    <div className="rounded-full bg-white/[0.06] p-3">
-                      <img src={result.previews.get('android-chrome-192x192.png')!} alt="Android" className="h-12 w-12 rounded-full" />
+                    <div className="rounded-full bg-white/[0.06] p-2 md:p-3">
+                      <img src={result.previews.get('android-chrome-192x192.png')!} alt="Android" className="h-10 w-10 rounded-full md:h-12 md:w-12" />
                     </div>
                     <span className="text-[9px] text-white/20">Android</span>
                   </div>
@@ -204,7 +203,7 @@ export function FaviconTool() {
             {/* Generated sizes grid */}
             <div className="flex flex-col gap-2">
               <span className="px-1 text-[10px] uppercase tracking-widest text-white/15">Generated Files</span>
-              <div className="grid grid-cols-3 gap-3 md:grid-cols-4 lg:grid-cols-6">
+              <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-3 lg:grid-cols-6">
                 {[
                   { name: 'favicon-16x16.png', label: 'Favicon', size: '16' },
                   { name: 'favicon-32x32.png', label: 'Favicon 2x', size: '32' },
@@ -229,7 +228,7 @@ export function FaviconTool() {
                 <span className="text-[10px] uppercase tracking-widest text-white/15">HTML Markup</span>
                 <CopyButton text={htmlMarkup} label="Copy" copiedLabel="Copied" size="sm" className="flex items-center gap-1 text-[10px] text-white/20 transition-colors hover:text-white/40" />
               </div>
-              <pre className="font-code overflow-auto rounded-lg bg-white/[0.02] p-3 text-[11px] leading-relaxed text-white/40">
+              <pre className="font-code whitespace-pre-wrap break-all rounded-lg bg-white/[0.02] p-2 text-[9px] leading-relaxed text-white/40 md:break-normal md:p-3 md:text-[11px]">
                 {htmlMarkup}
               </pre>
             </div>
@@ -237,11 +236,12 @@ export function FaviconTool() {
             {/* Download */}
             <button
               onClick={handleDownload}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-white/[0.06] py-3 text-sm font-medium text-white/60 transition-colors hover:bg-white/[0.1] hover:text-white/80"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-white/[0.06] py-2.5 text-xs font-medium text-white/60 transition-colors hover:bg-white/[0.1] hover:text-white/80 md:py-3 md:text-sm"
             >
               <DownloadSimple weight="duotone" className="h-4 w-4" />
               Download All (ZIP)
             </button>
+            <div className="h-2 md:h-0" />
           </motion.div>
         )}
       </AnimatePresence>

@@ -121,23 +121,29 @@ function AddCityButton({ onAdd, existingCodes, variant = 'icon' }: { onAdd: (cit
       <AnimatePresence>
         {open && (
           <>
-            <div className="fixed inset-0 z-40" onClick={() => { setOpen(false); setSearch(''); }} />
+            <div className="fixed inset-0 z-40 bg-black/30 lg:bg-transparent" onClick={() => { setOpen(false); setSearch(''); }} />
             <motion.div
-              className="absolute bottom-full right-0 z-50 mb-1 w-[200px] rounded-xl border border-white/[0.08] bg-[#161520] p-2 shadow-2xl"
-              initial={{ opacity: 0, y: -4 }}
+              className="fixed inset-x-0 bottom-0 z-50 rounded-t-2xl border-t border-white/[0.08] bg-[#161520] p-3 shadow-2xl lg:absolute lg:inset-x-auto lg:bottom-full lg:right-0 lg:mb-1 lg:w-[200px] lg:rounded-xl lg:border lg:p-2"
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
-              transition={{ duration: 0.1 }}
+              exit={{ opacity: 0, y: 20 }}
+              transition={{ duration: 0.15 }}
             >
+              <div className="mb-2 flex items-center justify-between lg:hidden">
+                <span className="text-[10px] font-semibold uppercase tracking-widest text-white/25">Add City</span>
+                <button onClick={() => { setOpen(false); setSearch(''); }} className="text-white/20">
+                  <X weight="duotone" className="h-4 w-4" />
+                </button>
+              </div>
               <input
                 autoFocus
                 type="text"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 placeholder="Search cities..."
-                className="font-code mb-1 w-full bg-transparent px-2 py-1.5 text-[11px] text-white/60 outline-none placeholder:text-white/20"
+                className="font-code mb-1 w-full bg-transparent px-2 py-1.5 text-[11px] text-white/60 outline-none placeholder:text-white/20 lg:text-[11px]"
               />
-              <div className="hide-scroll max-h-[180px] overflow-auto">
+              <div className="hide-scroll max-h-[240px] overflow-auto lg:max-h-[180px]">
                 {available.length === 0 ? (
                   <p className="px-2 py-3 text-center text-[10px] text-white/20">No results</p>
                 ) : (
@@ -145,7 +151,7 @@ function AddCityButton({ onAdd, existingCodes, variant = 'icon' }: { onAdd: (cit
                     <button
                       key={c.code}
                       onClick={() => { onAdd(c); setOpen(false); setSearch(''); }}
-                      className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-white/[0.05]"
+                      className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left transition-colors hover:bg-white/[0.05] lg:py-1.5"
                     >
                       <span className="font-code text-[10px] font-bold text-white/40">{c.code}</span>
                       <span className="truncate text-[10px] text-white/25">{c.label}</span>
