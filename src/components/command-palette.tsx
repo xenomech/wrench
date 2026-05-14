@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   MagnifyingGlass, BracketsCurly, Lock, Fingerprint, FileText,
   Sparkle, ArrowsLeftRight, ShieldCheck, Binary, Link, Code,
-  Key, Hash, TextAa, GitDiff, Clock,
+  Key, Hash, TextAa, GitDiff, Clock, Image,
 } from '@phosphor-icons/react';
 import { useRouter } from 'next/navigation';
 import type { ComponentType } from 'react';
@@ -34,6 +34,7 @@ const tools: Tool[] = [
   { id: 'text-diff', label: 'Diff', section: 'Text', href: '/text', icon: GitDiff, keywords: ['diff', 'compare'] },
   { id: 'text-markdown', label: 'Markdown', section: 'Text', href: '/text/markdown', icon: FileText, keywords: ['markdown', 'preview'] },
   { id: 'time-clock', label: 'World Clock', section: 'Time', href: '/time', icon: Clock, keywords: ['time', 'clock', 'timezone', 'world', 'convert', 'unix', 'timestamp'] },
+  { id: 'assets-favicon', label: 'Favicon Generator', section: 'Assets', href: '/assets', icon: Image, keywords: ['favicon', 'icon', 'image', 'png', 'ico', 'apple', 'android'] },
 ];
 
 const sections = [...new Set(tools.map(t => t.section))];
