@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Copy, Check, ArrowCounterClockwise, Sun, Moon, Plus, X, GearSix } from '@phosphor-icons/react';
+import { Drawer } from 'vaul';
 import { useTimeStore, ALL_TIMEZONES, type CityZone } from '@/lib/time-store';
 import {
   format as fnsFormat,
@@ -98,67 +99,109 @@ function AnimatedTime({ time }: { time: string }) {
   );
 }
 
-function AddCityButton({ onAdd, existingCodes, variant = 'icon' }: { onAdd: (city: CityZone) => void; existingCodes: string[]; variant?: 'icon' | 'empty' }) {
-  const [open, setOpen] = useState(false);
+function CityList({ available, onSelect }: { available: CityZone[]; onSelect: (c: CityZone) => void }) {
   const [search, setSearch] = useState('');
-  const available = ALL_TIMEZONES.filter(
-    c => !existingCodes.includes(c.code) &&
-      (c.label.toLowerCase().includes(search.toLowerCase()) || c.code.toLowerCase().includes(search.toLowerCase()))
+  const filtered = available.filter(
+    c => c.label.toLowerCase().includes(search.toLowerCase()) || c.code.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
+    <>
+      <input
+        ref={el => { if (el && window.matchMedia('(pointer: fine)').matches) el.focus(); }}
+        type="text"
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+        placeholder="Search cities..."
+        className="font-code mb-1 w-full bg-transparent px-2 py-1.5 text-[11px] text-white/60 outline-none placeholder:text-white/25"
+      />
+      <div className="hide-scroll max-h-[240px] overflow-auto lg:max-h-[180px]">
+        {filtered.length === 0 ? (
+          <p className="px-2 py-3 text-center text-[10px] text-white/30">No results</p>
+        ) : (
+          filtered.map(c => (
+            <button
+              key={c.code}
+              onClick={() => onSelect(c)}
+              className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left transition-colors hover:bg-white/[0.05] lg:py-1.5"
+            >
+              <span className="font-code text-[10px] font-bold text-white/40">{c.code}</span>
+              <span className="truncate text-[10px] text-white/30">{c.label}</span>
+              <span className="ml-auto truncate text-[9px] text-white/15">{c.tz}</span>
+            </button>
+          ))
+        )}
+      </div>
+    </>
+  );
+}
+
+function AddCityButton({ onAdd, existingCodes, variant = 'icon' }: { onAdd: (city: CityZone) => void; existingCodes: string[]; variant?: 'icon' | 'empty' }) {
+  const [open, setOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const available = ALL_TIMEZONES.filter(c => !existingCodes.includes(c.code));
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 1023px)');
+    setIsMobile(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
+  const handleSelect = (c: CityZone) => {
+    onAdd(c);
+    setOpen(false);
+  };
+
+  const trigger = (
+    <button
+      onClick={() => setOpen(!open)}
+      className={variant === 'empty'
+        ? 'flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-white/[0.08] py-6 text-[10px] uppercase tracking-widest text-white/30 transition-colors hover:border-white/[0.15] hover:text-white/40'
+        : 'flex h-7 w-7 items-center justify-center rounded-md text-white/30 transition-colors hover:bg-white/[0.04] hover:text-white/40'
+      }
+    >
+      <Plus weight="duotone" className={variant === 'empty' ? 'h-4 w-4' : 'h-3.5 w-3.5'} />
+      {variant === 'empty' && 'Add a city'}
+    </button>
+  );
+
+  if (isMobile) {
+    return (
+      <Drawer.Root open={open} onOpenChange={setOpen}>
+        <Drawer.Trigger asChild>{trigger}</Drawer.Trigger>
+        <Drawer.Portal>
+          <Drawer.Overlay className="fixed inset-0 z-[60] bg-black/40" />
+          <Drawer.Content className="fixed inset-x-0 bottom-0 z-[70] rounded-t-2xl bg-[#161520] outline-none">
+            <div className="mx-auto mt-3 h-1 w-8 rounded-full bg-white/10" />
+            <div className="p-3 pt-4">
+              <Drawer.Title className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-white/40">
+                Add City
+              </Drawer.Title>
+              <CityList available={available} onSelect={handleSelect} />
+            </div>
+          </Drawer.Content>
+        </Drawer.Portal>
+      </Drawer.Root>
+    );
+  }
+
+  return (
     <div className="relative">
-      <button
-        onClick={() => setOpen(!open)}
-        className={variant === 'empty'
-          ? 'flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-white/[0.08] py-6 text-[10px] uppercase tracking-widest text-white/20 transition-colors hover:border-white/[0.15] hover:text-white/35'
-          : 'flex h-7 w-7 items-center justify-center rounded-md text-white/15 transition-colors hover:bg-white/[0.04] hover:text-white/35'
-        }
-      >
-        <Plus weight="duotone" className={variant === 'empty' ? 'h-4 w-4' : 'h-3.5 w-3.5'} />
-        {variant === 'empty' && 'Add a city'}
-      </button>
+      {trigger}
       <AnimatePresence>
         {open && (
           <>
-            <div className="fixed inset-0 z-[60] bg-black/30 lg:bg-transparent" onClick={() => { setOpen(false); setSearch(''); }} />
+            <div className="fixed inset-0 z-[60]" onClick={() => setOpen(false)} />
             <motion.div
-              className="fixed inset-x-0 bottom-0 z-[70] rounded-t-2xl border-t border-white/[0.08] bg-[#161520] p-3 shadow-2xl lg:absolute lg:inset-x-auto lg:bottom-full lg:right-0 lg:mb-1 lg:w-[200px] lg:rounded-xl lg:border lg:p-2"
-              initial={{ opacity: 0, y: 20 }}
+              className="absolute bottom-full right-0 z-[70] mb-1 w-[280px] rounded-xl border border-white/[0.08] bg-[#161520] p-2 shadow-2xl"
+              initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.15 }}
+              exit={{ opacity: 0, y: 4 }}
+              transition={{ duration: 0.1 }}
             >
-              <div className="mb-2 flex items-center justify-between lg:hidden">
-                <span className="text-[10px] font-semibold uppercase tracking-widest text-white/40">Add City</span>
-                <button onClick={() => { setOpen(false); setSearch(''); }} className="text-white/20">
-                  <X weight="duotone" className="h-4 w-4" />
-                </button>
-              </div>
-              <input
-                ref={el => { if (el && window.matchMedia('(pointer: fine)').matches) el.focus(); }}
-                type="text"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                placeholder="Search cities..."
-                className="font-code mb-1 w-full bg-transparent px-2 py-1.5 text-[11px] text-white/60 outline-none placeholder:text-white/25 lg:text-[11px]"
-              />
-              <div className="hide-scroll max-h-[240px] overflow-auto lg:max-h-[180px]">
-                {available.length === 0 ? (
-                  <p className="px-2 py-3 text-center text-[10px] text-white/20">No results</p>
-                ) : (
-                  available.map(c => (
-                    <button
-                      key={c.code}
-                      onClick={() => { onAdd(c); setOpen(false); setSearch(''); }}
-                      className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left transition-colors hover:bg-white/[0.05] lg:py-1.5"
-                    >
-                      <span className="font-code text-[10px] font-bold text-white/40">{c.code}</span>
-                      <span className="truncate text-[10px] text-white/25">{c.label}</span>
-                    </button>
-                  ))
-                )}
-              </div>
+              <CityList available={available} onSelect={handleSelect} />
             </motion.div>
           </>
         )}
