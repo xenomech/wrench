@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Trash, FileCode, Copy, Check } from '@phosphor-icons/react';
-import { diffLines, diffWords, type Change } from 'diff';
-import { ToolbarButton } from '@/components/toolbar-button';
-import { useToast } from '@/components/toast';
-import type { ReactNode } from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Trash, FileCode, Copy, Check } from "@phosphor-icons/react";
+import { diffLines, diffChars, type Change } from "diff";
+import { ToolbarButton } from "@/components/toolbar-button";
+import { useToast } from "@/components/toast";
+import type { ReactNode } from "react";
 
 const SAMPLE_ORIGINAL = `function greet(name) {
   console.log("Hello, " + name);
@@ -25,7 +25,10 @@ const users = ["Alice", "Bob", "Charlie"];
 users.forEach(user => greet(user));
 console.log("Done");`;
 
-function buildHighlights(changes: Change[], side: 'removed' | 'added'): ReactNode[] {
+function buildHighlights(
+  changes: Change[],
+  side: "removed" | "added",
+): ReactNode[] {
   const nodes: ReactNode[] = [];
   let i = 0;
 
@@ -41,36 +44,39 @@ function buildHighlights(changes: Change[], side: 'removed' | 'added'): ReactNod
     if (change.removed && i + 1 < changes.length && changes[i + 1]!.added) {
       const removed = change;
       const added = changes[i + 1]!;
-      const wordChanges = diffWords(removed.value, added.value);
+      const wordChanges = diffChars(removed.value, added.value);
 
-      if (side === 'removed') {
+      if (side === "removed") {
         wordChanges.forEach((wc, wi) => {
           if (wc.removed)
             nodes.push(
               <span key={`wr-${i}-${wi}`} className="rounded-sm bg-red-500/30">
                 {wc.value}
-              </span>
+              </span>,
             );
           else if (!wc.added)
             nodes.push(
               <span key={`wc-${i}-${wi}`} className="bg-red-500/10">
                 {wc.value}
-              </span>
+              </span>,
             );
         });
       } else {
         wordChanges.forEach((wc, wi) => {
           if (wc.added)
             nodes.push(
-              <span key={`wa-${i}-${wi}`} className="rounded-sm bg-emerald-500/30">
+              <span
+                key={`wa-${i}-${wi}`}
+                className="rounded-sm bg-emerald-500/30"
+              >
                 {wc.value}
-              </span>
+              </span>,
             );
           else if (!wc.removed)
             nodes.push(
               <span key={`wc-${i}-${wi}`} className="bg-emerald-500/10">
                 {wc.value}
-              </span>
+              </span>,
             );
         });
       }
@@ -78,17 +84,17 @@ function buildHighlights(changes: Change[], side: 'removed' | 'added'): ReactNod
       continue;
     }
 
-    if (change.removed && side === 'removed') {
+    if (change.removed && side === "removed") {
       nodes.push(
         <span key={`r-${i}`} className="rounded-sm bg-red-500/30">
           {change.value}
-        </span>
+        </span>,
       );
-    } else if (change.added && side === 'added') {
+    } else if (change.added && side === "added") {
       nodes.push(
         <span key={`a-${i}`} className="rounded-sm bg-emerald-500/30">
           {change.value}
-        </span>
+        </span>,
       );
     }
     i++;
@@ -116,8 +122,8 @@ function ScrollSyncedPane({
     const sync = () => {
       if (overlayRef.current) overlayRef.current.scrollTop = ta.scrollTop;
     };
-    ta.addEventListener('scroll', sync);
-    return () => ta.removeEventListener('scroll', sync);
+    ta.addEventListener("scroll", sync);
+    return () => ta.removeEventListener("scroll", sync);
   }, []);
 
   return (
@@ -134,10 +140,12 @@ function ScrollSyncedPane({
       <textarea
         ref={textareaRef}
         value={value}
-        onChange={e => onChange(e.target.value)}
+        onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className={`font-code placeholder:text-white/22 relative h-full w-full resize-none rounded-xl bg-black/20 p-4 text-sm leading-relaxed outline-none focus:ring-1 focus:ring-white/10 ${
-          highlights ? 'text-transparent caret-white selection:bg-white/10' : 'text-white/90'
+          highlights
+            ? "text-transparent caret-white selection:bg-white/10"
+            : "text-white/90"
         }`}
       />
     </div>
@@ -161,7 +169,9 @@ function HighlightedPane({
 
   return (
     <div className="flex min-h-[120px] flex-1 flex-col gap-2 md:min-h-[150px] lg:min-h-[250px]">
-      <span className="text-xs font-medium uppercase tracking-wider text-white/35">{label}</span>
+      <span className="text-xs font-medium uppercase tracking-wider text-white/35">
+        {label}
+      </span>
       <ScrollSyncedPane
         value={value}
         onChange={onChange}
@@ -173,8 +183,8 @@ function HighlightedPane({
 }
 
 export function DiffViewer() {
-  const [original, setOriginal] = useState('');
-  const [modified, setModified] = useState('');
+  const [original, setOriginal] = useState("");
+  const [modified, setModified] = useState("");
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
 
@@ -183,22 +193,23 @@ export function DiffViewer() {
     return diffLines(original, modified);
   }, [original, modified]);
 
-  const hasChanges = changes.some(c => c.added || c.removed);
+  const hasChanges = changes.some((c) => c.added || c.removed);
 
   const originalHighlights = useMemo(
-    () => (hasChanges ? buildHighlights(changes, 'removed') : null),
-    [changes, hasChanges]
+    () => (hasChanges ? buildHighlights(changes, "removed") : null),
+    [changes, hasChanges],
   );
   const modifiedHighlights = useMemo(
-    () => (hasChanges ? buildHighlights(changes, 'added') : null),
-    [changes, hasChanges]
+    () => (hasChanges ? buildHighlights(changes, "added") : null),
+    [changes, hasChanges],
   );
 
   const stats = useMemo(() => {
     let added = 0,
       removed = 0;
-    changes.forEach(c => {
-      const lines = (c.value.match(/\n/g) || []).length + (c.value.endsWith('\n') ? 0 : 1);
+    changes.forEach((c) => {
+      const lines =
+        (c.value.match(/\n/g) || []).length + (c.value.endsWith("\n") ? 0 : 1);
       if (c.added) added += c.count ?? lines;
       if (c.removed) removed += c.count ?? lines;
     });
@@ -207,18 +218,18 @@ export function DiffViewer() {
 
   const handleCopy = useCallback(async () => {
     const diffText = changes
-      .map(c => {
-        const prefix = c.added ? '+ ' : c.removed ? '- ' : '  ';
+      .map((c) => {
+        const prefix = c.added ? "+ " : c.removed ? "- " : "  ";
         return c.value
-          .split('\n')
+          .split("\n")
           .filter(Boolean)
-          .map(l => prefix + l)
-          .join('\n');
+          .map((l) => prefix + l)
+          .join("\n");
       })
-      .join('\n');
+      .join("\n");
     await navigator.clipboard.writeText(diffText);
     setCopied(true);
-    toast('success', 'Diff copied');
+    toast("success", "Diff copied");
     setTimeout(() => setCopied(false), 2000);
   }, [changes, toast]);
 
@@ -248,16 +259,20 @@ export function DiffViewer() {
           </ToolbarButton>
           <ToolbarButton
             onClick={() => {
-              setOriginal('');
-              setModified('');
+              setOriginal("");
+              setModified("");
             }}
           >
             <Trash weight="duotone" className="h-4 w-4" /> Clear
           </ToolbarButton>
           {hasChanges && (
             <ToolbarButton onClick={handleCopy}>
-              {copied ? <Check weight="duotone" className="h-4 w-4 text-emerald-400" /> : <Copy weight="duotone" className="h-4 w-4" />}
-              {copied ? 'Copied' : 'Copy Diff'}
+              {copied ? (
+                <Check weight="duotone" className="h-4 w-4 text-emerald-400" />
+              ) : (
+                <Copy weight="duotone" className="h-4 w-4" />
+              )}
+              {copied ? "Copied" : "Copy Diff"}
             </ToolbarButton>
           )}
         </div>
