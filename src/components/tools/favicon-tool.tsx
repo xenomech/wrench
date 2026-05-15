@@ -170,7 +170,7 @@ export function FaviconTool() {
     (result.originalSize.width < 512 || result.originalSize.height < 512);
 
   return (
-    <div className="flex h-full flex-col items-center overflow-auto">
+    <div className="hide-scroll flex h-full flex-col items-center overflow-auto">
       {!result && !loading && (
         <div className="flex flex-1 flex-col items-center justify-center px-4">
           <motion.p
