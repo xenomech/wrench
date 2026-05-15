@@ -4,6 +4,9 @@ import { useRef, useCallback, useState, useEffect } from "react";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { CaretRight, DotsSixVertical } from "@phosphor-icons/react";
 import { ShinyText } from "@/components/shiny-text";
+import { useSound } from "@/hooks/use-sound";
+import { tick001Sound } from "@/sounds/tick-001";
+import { useSoundStore } from "@/lib/sound-store";
 
 type SwipeRailProps = {
   leftLabel?: string;
@@ -28,6 +31,8 @@ export function SwipeRail({
   const [trackW, setTrackW] = useState(0);
   const x = useMotionValue(0);
   const biDir = !!onSwipeLeft && !!onSwipeRight;
+  const soundEnabled = useSoundStore((s) => s.enabled);
+  const [playTick] = useSound(tick001Sound, { volume: 0.4, soundEnabled });
 
   useEffect(() => {
     const el = trackRef.current;
@@ -80,6 +85,7 @@ export function SwipeRail({
       (biDir && maxL > 0 && cur / -maxL >= THRESHOLD)
     ) {
       (document.activeElement as HTMLElement)?.blur();
+      playTick();
     }
     if (maxR > 0 && cur / maxR >= THRESHOLD && onSwipeRight) {
       animate(x, maxR, {
@@ -104,7 +110,7 @@ export function SwipeRail({
     } else {
       animate(x, 0, { type: "spring", stiffness: 500, damping: 35 });
     }
-  }, [x, maxR, maxL, biDir, onSwipeLeft, onSwipeRight]);
+  }, [x, maxR, maxL, biDir, onSwipeLeft, onSwipeRight, playTick]);
 
   return (
     <div

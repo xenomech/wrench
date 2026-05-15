@@ -14,6 +14,9 @@ import {
 } from "@phosphor-icons/react";
 import { Drawer } from "vaul";
 import { useTimeStore, ALL_TIMEZONES, type CityZone } from "@/lib/time-store";
+import { playSound } from "@/lib/sound-engine";
+import { tick002Sound } from "@/sounds/tick-002";
+import { useSoundStore } from "@/lib/sound-store";
 import {
   format as fnsFormat,
   formatDistanceToNow,
@@ -430,9 +433,14 @@ export function TimeTool() {
   const formatTimeLocal = useFormattedTime(timeFormat, showSeconds);
 
   useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), 1000);
+    const id = setInterval(() => {
+      setNow(new Date());
+      if (showSeconds && useSoundStore.getState().enabled) {
+        playSound(tick002Sound.dataUri, { volume: 0.15 });
+      }
+    }, 1000);
     return () => clearInterval(id);
-  }, []);
+  }, [showSeconds]);
 
   const parsed = useMemo(
     () => detectAndParse(converterInput),

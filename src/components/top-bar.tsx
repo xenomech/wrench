@@ -1,9 +1,19 @@
-'use client';
+"use client";
 
-import { Command, GithubLogo, XLogo, Globe } from '@phosphor-icons/react';
-import { openCommandPalette } from '@/components/command-palette';
+import {
+  Command,
+  GithubLogo,
+  XLogo,
+  Globe,
+  SpeakerHigh,
+  SpeakerSlash,
+} from "@phosphor-icons/react";
+import { openCommandPalette } from "@/components/command-palette";
+import { useSoundStore } from "@/lib/sound-store";
 
 export function TopBar() {
+  const { enabled, toggle } = useSoundStore();
+
   return (
     <div className="flex shrink-0 items-center justify-between px-4 py-4">
       <button
@@ -14,6 +24,17 @@ export function TopBar() {
         <span className="font-code">K</span>
       </button>
       <div className="flex items-center gap-1">
+        <button
+          onClick={toggle}
+          className="flex h-7 w-7 items-center justify-center rounded-md text-white/30 transition-colors hover:bg-white/[0.04] hover:text-white/50"
+          aria-label={enabled ? "Mute sounds" : "Enable sounds"}
+        >
+          {enabled ? (
+            <SpeakerHigh weight="duotone" className="h-4 w-4" />
+          ) : (
+            <SpeakerSlash weight="duotone" className="h-4 w-4" />
+          )}
+        </button>
         <a
           href="https://justgokul.dev"
           target="_blank"

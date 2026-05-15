@@ -1,65 +1,71 @@
-'use client';
+"use client";
 
-import { useState, useCallback, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Copy, Check, Trash } from '@phosphor-icons/react';
-import { useToast } from '@/components/toast';
-import { SwipeRail } from '@/components/swipe-rail';
-import { md5 } from '@/lib/md5';
+import { useState, useCallback, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Copy, Check, Trash } from "@phosphor-icons/react";
+import { useToast } from "@/components/toast";
+import { SwipeRail } from "@/components/swipe-rail";
+import { md5 } from "@/lib/md5";
+import { useSound } from "@/hooks/use-sound";
+import { macTrashSound } from "@/sounds/mac-trash";
+import { useSoundStore } from "@/lib/sound-store";
 
 async function computeHash(algorithm: string, text: string): Promise<string> {
   const data = new TextEncoder().encode(text);
   const buffer = await crypto.subtle.digest(algorithm, data);
   return Array.from(new Uint8Array(buffer))
-    .map(b => b.toString(16).padStart(2, '0'))
-    .join('');
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 }
 
 type Hashes = { md5: string; sha1: string; sha256: string };
 
 const HASH_COLORS = [
-  { label: 'MD5', key: 'md5' as const, color: 'text-violet-400/60' },
-  { label: 'SHA-1', key: 'sha1' as const, color: 'text-amber-400/60' },
-  { label: 'SHA-256', key: 'sha256' as const, color: 'text-emerald-400/60' },
+  { label: "MD5", key: "md5" as const, color: "text-violet-400/60" },
+  { label: "SHA-1", key: "sha1" as const, color: "text-amber-400/60" },
+  { label: "SHA-256", key: "sha256" as const, color: "text-emerald-400/60" },
 ];
 
 export function HashGenerator() {
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const [hashes, setHashes] = useState<Hashes | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    if (window.matchMedia("(pointer: fine)").matches)
-    inputRef.current?.focus();
+    if (window.matchMedia("(pointer: fine)").matches) inputRef.current?.focus();
   }, []);
 
   const handleGenerate = useCallback(async () => {
     if (!input.trim()) return;
     const [sha1, sha256] = await Promise.all([
-      computeHash('SHA-1', input),
-      computeHash('SHA-256', input),
+      computeHash("SHA-1", input),
+      computeHash("SHA-256", input),
     ]);
     setHashes({ md5: md5(input), sha1, sha256 });
-    toast('success', 'Hashes generated');
+    toast("success", "Hashes generated");
   }, [input, toast]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
+      if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
         handleGenerate();
       }
     },
-    [handleGenerate]
+    [handleGenerate],
   );
 
+  const soundEnabled = useSoundStore((s) => s.enabled);
+  const [playTrash] = useSound(macTrashSound, { volume: 0.65, soundEnabled });
+
   const handleClear = useCallback(() => {
-    setInput('');
+    setInput("");
     setHashes(null);
+    playTrash();
     inputRef.current?.focus();
-  }, []);
+  }, [playTrash]);
 
   const copyHash = async (value: string, field: string) => {
     await navigator.clipboard.writeText(value);
@@ -72,7 +78,7 @@ export function HashGenerator() {
   return (
     <div className="flex h-full flex-col items-center">
       <div
-        className={`flex w-full max-w-3xl flex-col items-center justify-center transition-all duration-300 ${hashes ? 'py-4' : 'flex-1'}`}
+        className={`flex w-full max-w-3xl flex-col items-center justify-center transition-all duration-300 ${hashes ? "py-4" : "flex-1"}`}
       >
         {!hasInput && !hashes && (
           <motion.p
@@ -89,7 +95,7 @@ export function HashGenerator() {
           <textarea
             ref={inputRef}
             value={input}
-            onChange={e => {
+            onChange={(e) => {
               setInput(e.target.value);
               setHashes(null);
             }}
@@ -136,7 +142,11 @@ export function HashGenerator() {
                 className="relative rounded-xl bg-black/25 p-4"
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05, duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+                transition={{
+                  delay: i * 0.05,
+                  duration: 0.2,
+                  ease: [0.25, 0.46, 0.45, 0.94],
+                }}
               >
                 <div className="mb-1.5 flex items-center justify-between">
                   <span
@@ -149,7 +159,10 @@ export function HashGenerator() {
                     className="text-white/20 transition-colors duration-150 hover:text-white/50"
                   >
                     {copiedField === row.key ? (
-                      <Check weight="duotone" className="h-3 w-3 text-emerald-400" />
+                      <Check
+                        weight="duotone"
+                        className="h-3 w-3 text-emerald-400"
+                      />
                     ) : (
                       <Copy weight="duotone" className="h-3 w-3" />
                     )}
@@ -170,10 +183,7 @@ export function HashGenerator() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <SwipeRail
-            rightLabel="Generate"
-            onSwipeRight={handleGenerate}
-          />
+          <SwipeRail rightLabel="Generate" onSwipeRight={handleGenerate} />
         </motion.div>
       )}
     </div>

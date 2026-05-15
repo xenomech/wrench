@@ -1,20 +1,22 @@
-'use client';
+"use client";
 
-import { useState, useCallback, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Copy, Check } from '@phosphor-icons/react';
-import { Tooltip } from '@/components/tooltip';
+import { useState, useCallback, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
+import { Copy, Check } from "@phosphor-icons/react";
+import { useSound } from "@/hooks/use-sound";
+import { scroll005Sound } from "@/sounds/scroll-005";
+import { useSoundStore } from "@/lib/sound-store";
 
-const HEX = '0123456789abcdef';
-const SCRAMBLE_DURATION = 600;
+const HEX = "0123456789abcdef";
+const SCRAMBLE_DURATION = 1000;
 
 function generateUUID(): string {
   try {
     return crypto.randomUUID();
   } catch {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
       const r = (Math.random() * 16) | 0;
-      return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
+      return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
     });
   }
 }
@@ -32,14 +34,17 @@ function useScrambleReveal(target: string, trigger: number) {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / SCRAMBLE_DURATION, 1);
 
-      const chars = target.split('').map((char, i) => {
-        if (char === '-') return '-';
-        const charProgress = Math.max(0, (progress - i / target.length) * target.length);
+      const chars = target.split("").map((char, i) => {
+        if (char === "-") return "-";
+        const charProgress = Math.max(
+          0,
+          (progress - i / target.length) * target.length,
+        );
         if (charProgress >= 1) return char;
         return HEX[Math.floor(Math.random() * HEX.length)]!;
       });
 
-      setDisplay(chars.join(''));
+      setDisplay(chars.join(""));
 
       if (progress < 1) {
         raf = requestAnimationFrame(tick);
@@ -53,7 +58,7 @@ function useScrambleReveal(target: string, trigger: number) {
   return display;
 }
 
-const SEGMENT_LABELS = ['time-low', 'mid', 'hi', 'seq', 'node'] as const;
+const SEGMENT_LABELS = ["time-low", "mid", "hi", "seq", "node"] as const;
 
 function UuidBlock({ char }: { char: string }) {
   return (
@@ -64,36 +69,45 @@ function UuidBlock({ char }: { char: string }) {
 }
 
 export function UuidGenerator() {
-  const [current, setCurrent] = useState('');
+  const [current, setCurrent] = useState(() => generateUUID());
   const [history, setHistory] = useState<string[]>([]);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-  const [generation, setGeneration] = useState(0);
+  const [generation, setGeneration] = useState(1);
   const currentRef = useRef(current);
-  currentRef.current = current;
 
   useEffect(() => {
-    setCurrent(generateUUID());
-    setGeneration(1);
-  }, []);
+    currentRef.current = current;
+  }, [current]);
+
+  const soundEnabled = useSoundStore((s) => s.enabled);
+  const [playScroll] = useSound(scroll005Sound, {
+    volume: 0.35,
+    interrupt: true,
+    soundEnabled,
+  });
 
   const generate = useCallback(() => {
-    setHistory(h => [currentRef.current, ...h].slice(0, 4));
+    setHistory((h) => [currentRef.current, ...h].slice(0, 4));
     setCurrent(generateUUID());
-    setGeneration(g => g + 1);
-  }, []);
+    setGeneration((g) => g + 1);
+    playScroll();
+  }, [playScroll]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (
-        e.code === 'Space' &&
-        !(e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement)
+        e.code === "Space" &&
+        !(
+          e.target instanceof HTMLInputElement ||
+          e.target instanceof HTMLTextAreaElement
+        )
       ) {
         e.preventDefault();
         generate();
       }
     };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
   }, [generate]);
 
   const copyOne = useCallback(async (uuid: string, i: number) => {
@@ -114,16 +128,20 @@ export function UuidGenerator() {
             onClick={generate}
           >
             {current &&
-              current.split('-').map((segment, si) => (
+              current.split("-").map((segment, si) => (
                 <div key={si} className="flex items-center gap-3">
                   <span className="w-16 text-right text-[10px] uppercase tracking-widest text-white/35">
                     {SEGMENT_LABELS[si]}
                   </span>
                   <div className="flex gap-[2px]">
-                    {segment.split('').map((char, ci) => (
+                    {segment.split("").map((char, ci) => (
                       <UuidBlock
                         key={ci}
-                        char={scrambled ? scrambled.split('-')[si]?.[ci] ?? char : char}
+                        char={
+                          scrambled
+                            ? (scrambled.split("-")[si]?.[ci] ?? char)
+                            : char
+                        }
                       />
                     ))}
                   </div>
@@ -132,20 +150,25 @@ export function UuidGenerator() {
           </div>
 
           {/* Desktop: inline blocks with labels below */}
-          <div
-            className="hidden flex-col items-center gap-6 lg:flex"
-          >
+          <div className="hidden flex-col items-center gap-6 lg:flex">
             <div className="flex items-center gap-[3px]">
               {current &&
-                current.split('').map((char, i) => {
-                  if (char === '-') {
-                    return <span key={i} className="font-code mx-1 text-2xl text-white/30">-</span>;
+                current.split("").map((char, i) => {
+                  if (char === "-") {
+                    return (
+                      <span
+                        key={i}
+                        className="font-code mx-1 text-2xl text-white/30"
+                      >
+                        -
+                      </span>
+                    );
                   }
                   return <UuidBlock key={i} char={scrambled[i] ?? char} />;
                 })}
             </div>
             <div className="flex items-center gap-6 text-[10px] uppercase tracking-widest text-white/30">
-              {SEGMENT_LABELS.map(label => (
+              {SEGMENT_LABELS.map((label) => (
                 <span key={label}>{label}</span>
               ))}
             </div>
@@ -153,11 +176,18 @@ export function UuidGenerator() {
 
           <div className="flex items-center gap-3">
             <button
-              onClick={(e) => { e.stopPropagation(); copyOne(current, 0); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                copyOne(current, 0);
+              }}
               className="flex items-center gap-1.5 text-xs text-white/25 transition-colors duration-150 hover:text-white/50"
             >
-              {copiedIndex === 0 ? <Check weight="duotone" className="h-3 w-3 text-emerald-400" /> : <Copy weight="duotone" className="h-3 w-3" />}
-              {copiedIndex === 0 ? 'Copied' : 'Copy'}
+              {copiedIndex === 0 ? (
+                <Check weight="duotone" className="h-3 w-3 text-emerald-400" />
+              ) : (
+                <Copy weight="duotone" className="h-3 w-3" />
+              )}
+              {copiedIndex === 0 ? "Copied" : "Copy"}
             </button>
           </div>
 
@@ -174,7 +204,9 @@ export function UuidGenerator() {
       </div>
 
       <div className="h-[100px] w-full max-w-lg shrink-0 pb-2 md:h-[120px] md:pb-4">
-        <p className={`mb-1 text-center text-[10px] uppercase tracking-widest transition-opacity duration-200 md:mb-2 ${history.length > 0 ? 'text-white/15' : 'text-transparent'}`}>
+        <p
+          className={`mb-1 text-center text-[10px] uppercase tracking-widest transition-opacity duration-200 md:mb-2 ${history.length > 0 ? "text-white/15" : "text-transparent"}`}
+        >
           Previous
         </p>
         <div className="flex flex-col items-center">
@@ -184,8 +216,10 @@ export function UuidGenerator() {
               onClick={() => copyOne(uuid, i + 1)}
               className="group relative cursor-pointer rounded-lg px-3 py-1 hover:bg-white/[0.03] md:py-1.5"
             >
-              <span className={`font-code text-[10px] md:text-xs ${copiedIndex === i + 1 ? 'text-emerald-400' : 'text-white/30'}`}>
-                {copiedIndex === i + 1 ? 'Copied!' : uuid}
+              <span
+                className={`font-code text-[10px] md:text-xs ${copiedIndex === i + 1 ? "text-emerald-400" : "text-white/30"}`}
+              >
+                {copiedIndex === i + 1 ? "Copied!" : uuid}
               </span>
             </div>
           ))}

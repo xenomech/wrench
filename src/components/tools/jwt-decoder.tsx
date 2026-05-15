@@ -1,19 +1,29 @@
-'use client';
+"use client";
 
-import { useState, useCallback, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, Warning, CheckCircle, Copy, Check, Trash } from '@phosphor-icons/react';
-import { SwipeRail } from '@/components/swipe-rail';
-import { useToast } from '@/components/toast';
-import { CodeEditor } from '@/components/code-editor';
+import { useState, useCallback, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Clock,
+  Warning,
+  CheckCircle,
+  Copy,
+  Check,
+  Trash,
+} from "@phosphor-icons/react";
+import { SwipeRail } from "@/components/swipe-rail";
+import { useToast } from "@/components/toast";
+import { CodeEditor } from "@/components/code-editor";
+import { useSound } from "@/hooks/use-sound";
+import { macTrashSound } from "@/sounds/mac-trash";
+import { useSoundStore } from "@/lib/sound-store";
 
 function decodeBase64Url(str: string): string {
-  const padded = str.replace(/-/g, '+').replace(/_/g, '/');
+  const padded = str.replace(/-/g, "+").replace(/_/g, "/");
   return decodeURIComponent(
     atob(padded)
-      .split('')
-      .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-      .join('')
+      .split("")
+      .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+      .join(""),
   );
 }
 
@@ -25,15 +35,19 @@ type JwtData = {
 };
 
 function parseJwt(token: string): JwtData {
-  const parts = token.trim().split('.');
-  if (parts.length !== 3) throw new Error('Invalid JWT: expected 3 parts');
+  const parts = token.trim().split(".");
+  if (parts.length !== 3) throw new Error("Invalid JWT: expected 3 parts");
 
-  const header = JSON.stringify(JSON.parse(decodeBase64Url(parts[0]!)), null, 2);
+  const header = JSON.stringify(
+    JSON.parse(decodeBase64Url(parts[0]!)),
+    null,
+    2,
+  );
   const payloadObj = JSON.parse(decodeBase64Url(parts[1]!));
   const payload = JSON.stringify(payloadObj, null, 2);
   const signature = parts[2]!;
 
-  let expiry: JwtData['expiry'] = null;
+  let expiry: JwtData["expiry"] = null;
   if (payloadObj.exp) {
     const date = new Date(payloadObj.exp * 1000);
     expiry = { expired: date < new Date(), date };
@@ -42,7 +56,15 @@ function parseJwt(token: string): JwtData {
   return { header, payload, signature, expiry };
 }
 
-function JsonBlock({ label, value, color }: { label: string; value: string; color: string }) {
+function JsonBlock({
+  label,
+  value,
+  color,
+}: {
+  label: string;
+  value: string;
+  color: string;
+}) {
   const [copied, setCopied] = useState(false);
   const handleCopy = async () => {
     await navigator.clipboard.writeText(value);
@@ -58,14 +80,20 @@ function JsonBlock({ label, value, color }: { label: string; value: string; colo
       transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
     >
       <div className="flex items-center justify-between">
-        <span className={`text-[11px] font-semibold uppercase tracking-widest ${color}`}>
+        <span
+          className={`text-[11px] font-semibold uppercase tracking-widest ${color}`}
+        >
           {label}
         </span>
         <button
           onClick={handleCopy}
           className="text-white/20 transition-colors duration-150 hover:text-white/50"
         >
-          {copied ? <Check weight="duotone" className="h-3 w-3 text-emerald-400" /> : <Copy weight="duotone" className="h-3 w-3" />}
+          {copied ? (
+            <Check weight="duotone" className="h-3 w-3 text-emerald-400" />
+          ) : (
+            <Copy weight="duotone" className="h-3 w-3" />
+          )}
         </button>
       </div>
       <div className="min-h-[80px] flex-1">
@@ -76,26 +104,32 @@ function JsonBlock({ label, value, color }: { label: string; value: string; colo
 }
 
 function TokenDisplay({ value }: { value: string }) {
-  const parts = value.split('.');
+  const parts = value.split(".");
   if (parts.length !== 3) return null;
 
-  const colors = ['text-violet-400', 'text-amber-400', 'text-red-400'];
+  const colors = ["text-violet-400", "text-amber-400", "text-red-400"];
 
   return (
     <div className="pointer-events-none absolute inset-0 flex items-center overflow-hidden px-1">
-      <div className="font-code flex text-lg font-medium" style={{ wordBreak: 'break-all' }}>
+      <div
+        className="font-code flex text-lg font-medium"
+        style={{ wordBreak: "break-all" }}
+      >
         {parts.map((part, pi) => (
           <span key={pi} className="flex">
             {pi > 0 && <span className="text-white/20">.</span>}
             <AnimatePresence initial={false} mode="popLayout">
-              {part.split('').map((char, ci) => (
+              {part.split("").map((char, ci) => (
                 <motion.span
                   key={`${pi}-${ci}-${char}`}
                   className={colors[pi]}
-                  initial={{ y: '60%', opacity: 0 }}
-                  animate={{ y: '0%', opacity: 1 }}
-                  exit={{ y: '60%', opacity: 0 }}
-                  transition={{ duration: 0.15, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  initial={{ y: "60%", opacity: 0 }}
+                  animate={{ y: "0%", opacity: 1 }}
+                  exit={{ y: "60%", opacity: 0 }}
+                  transition={{
+                    duration: 0.15,
+                    ease: [0.25, 0.46, 0.45, 0.94],
+                  }}
                 >
                   {char}
                 </motion.span>
@@ -109,7 +143,7 @@ function TokenDisplay({ value }: { value: string }) {
 }
 
 export function JwtDecoderTool() {
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const [decoded, setDecoded] = useState<JwtData | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -119,32 +153,35 @@ export function JwtDecoderTool() {
     try {
       const data = parseJwt(input);
       setDecoded(data);
-      toast('success', 'JWT decoded');
-    } catch (e: any) {
+      toast("success", "JWT decoded");
+    } catch (e: unknown) {
       setDecoded(null);
-      toast('error', e.message);
+      toast("error", (e as Error).message);
     }
   }, [input, toast]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter') {
+      if (e.key === "Enter") {
         e.preventDefault();
         handleDecode();
       }
     },
-    [handleDecode]
+    [handleDecode],
   );
 
+  const soundEnabled = useSoundStore((s) => s.enabled);
+  const [playTrash] = useSound(macTrashSound, { volume: 0.65, soundEnabled });
+
   const handleClear = useCallback(() => {
-    setInput('');
+    setInput("");
     setDecoded(null);
+    playTrash();
     inputRef.current?.focus();
-  }, []);
+  }, [playTrash]);
 
   useEffect(() => {
-    if (window.matchMedia("(pointer: fine)").matches)
-    inputRef.current?.focus();
+    if (window.matchMedia("(pointer: fine)").matches) inputRef.current?.focus();
   }, []);
 
   const hasToken = input.trim().length > 0;
@@ -154,7 +191,7 @@ export function JwtDecoderTool() {
     <div className="flex h-full flex-col">
       {/* Token input area */}
       <div
-        className={`relative flex flex-col items-center justify-center transition-all duration-300 ${decoded ? 'py-4' : 'flex-1'}`}
+        className={`relative flex flex-col items-center justify-center transition-all duration-300 ${decoded ? "py-4" : "flex-1"}`}
       >
         {showHint && (
           <motion.p
@@ -172,15 +209,17 @@ export function JwtDecoderTool() {
             ref={inputRef}
             type="text"
             value={input}
-            onChange={e => {
+            onChange={(e) => {
               setInput(e.target.value);
               setDecoded(null);
             }}
             onKeyDown={handleKeyDown}
             placeholder="eyJhbGciOiJIUzI1NiIs..."
             className={`font-code w-full bg-transparent text-center outline-none placeholder:text-white/25 ${
-              hasToken && input.split('.').length === 3 ? 'text-transparent caret-white' : 'text-white/80'
-            } ${decoded ? 'text-sm md:text-base' : 'text-base md:text-lg'}`}
+              hasToken && input.split(".").length === 3
+                ? "text-transparent caret-white"
+                : "text-white/80"
+            } ${decoded ? "text-sm md:text-base" : "text-base md:text-lg"}`}
             spellCheck={false}
             autoComplete="off"
           />
@@ -219,49 +258,57 @@ export function JwtDecoderTool() {
             transition={{ duration: 0.2 }}
           >
             <div className="hide-scroll flex h-full flex-col gap-3 overflow-auto pt-2">
-            {decoded.expiry && (
+              {decoded.expiry && (
+                <motion.div
+                  className={`mx-auto flex items-center gap-2.5 rounded-full px-5 py-2 text-[13px] font-medium ${
+                    decoded.expiry.expired
+                      ? "bg-red-500/10 text-red-400"
+                      : "bg-emerald-500/10 text-emerald-400"
+                  }`}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.1 }}
+                >
+                  {decoded.expiry.expired ? (
+                    <Warning weight="duotone" className="h-3.5 w-3.5" />
+                  ) : (
+                    <CheckCircle weight="duotone" className="h-3.5 w-3.5" />
+                  )}
+                  <Clock weight="duotone" className="h-3 w-3" />
+                  {decoded.expiry.expired ? "Expired" : "Valid"} —{" "}
+                  {decoded.expiry.date.toLocaleString()}
+                </motion.div>
+              )}
+
+              <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-2">
+                <JsonBlock
+                  label="Header"
+                  value={decoded.header}
+                  color="text-violet-400/60"
+                />
+                <JsonBlock
+                  label="Payload"
+                  value={decoded.payload}
+                  color="text-amber-400/60"
+                />
+              </div>
+
               <motion.div
-                className={`mx-auto flex items-center gap-2.5 rounded-full px-5 py-2 text-[13px] font-medium ${
-                  decoded.expiry.expired
-                    ? 'bg-red-500/10 text-red-400'
-                    : 'bg-emerald-500/10 text-emerald-400'
-                }`}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.1 }}
+                className="flex flex-col gap-1.5"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
               >
-                {decoded.expiry.expired ? (
-                  <Warning weight="duotone" className="h-3.5 w-3.5" />
-                ) : (
-                  <CheckCircle weight="duotone" className="h-3.5 w-3.5" />
-                )}
-                <Clock weight="duotone" className="h-3 w-3" />
-                {decoded.expiry.expired ? 'Expired' : 'Valid'} —{' '}
-                {decoded.expiry.date.toLocaleString()}
+                <span className="text-[11px] font-semibold uppercase tracking-widest text-red-400/40">
+                  Signature
+                </span>
+                <p
+                  className="font-code rounded-lg bg-black/25 p-3 text-[12px] leading-relaxed text-white/25"
+                  style={{ wordBreak: "break-all" }}
+                >
+                  {decoded.signature}
+                </p>
               </motion.div>
-            )}
-
-            <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-2">
-              <JsonBlock label="Header" value={decoded.header} color="text-violet-400/60" />
-              <JsonBlock label="Payload" value={decoded.payload} color="text-amber-400/60" />
-            </div>
-
-            <motion.div
-              className="flex flex-col gap-1.5"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 }}
-            >
-              <span className="text-[11px] font-semibold uppercase tracking-widest text-red-400/40">
-                Signature
-              </span>
-              <p
-                className="font-code rounded-lg bg-black/25 p-3 text-[12px] leading-relaxed text-white/25"
-                style={{ wordBreak: 'break-all' }}
-              >
-                {decoded.signature}
-              </p>
-            </motion.div>
             </div>
           </motion.div>
         )}
@@ -273,10 +320,7 @@ export function JwtDecoderTool() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <SwipeRail
-            rightLabel="Decode"
-            onSwipeRight={handleDecode}
-          />
+          <SwipeRail rightLabel="Decode" onSwipeRight={handleDecode} />
         </motion.div>
       )}
     </div>

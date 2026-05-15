@@ -1,84 +1,95 @@
-'use client';
+"use client";
 
-import { useState, useCallback, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Trash, ArrowDown } from '@phosphor-icons/react';
-import { useToast } from '@/components/toast';
-import { CopyButton } from '@/components/copy-button';
-import { SwipeRail } from '@/components/swipe-rail';
+import { useState, useCallback, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Trash, ArrowDown } from "@phosphor-icons/react";
+import { useToast } from "@/components/toast";
+import { CopyButton } from "@/components/copy-button";
+import { SwipeRail } from "@/components/swipe-rail";
+import { useSound } from "@/hooks/use-sound";
+import { macTrashSound } from "@/sounds/mac-trash";
+import { useSoundStore } from "@/lib/sound-store";
 
 const ENTITY_MAP: Record<string, string> = {
-  '&': '&amp;',
-  '<': '&lt;',
-  '>': '&gt;',
-  '"': '&quot;',
-  "'": '&#39;',
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;",
 };
 
 const REVERSE_MAP: Record<string, string> = Object.fromEntries(
-  Object.entries(ENTITY_MAP).map(([k, v]) => [v, k])
+  Object.entries(ENTITY_MAP).map(([k, v]) => [v, k]),
 );
 
 function encodeEntities(text: string): string {
-  return text.replace(/[&<>"']/g, ch => ENTITY_MAP[ch] ?? ch);
+  return text.replace(/[&<>"']/g, (ch) => ENTITY_MAP[ch] ?? ch);
 }
 
 function decodeEntities(text: string): string {
-  const textarea = typeof document !== 'undefined' ? document.createElement('textarea') : null;
+  const textarea =
+    typeof document !== "undefined" ? document.createElement("textarea") : null;
   if (!textarea) {
-    return text.replace(/&amp;|&lt;|&gt;|&quot;|&#39;|&#x[\da-fA-F]+;|&#\d+;/g, entity => {
-      return REVERSE_MAP[entity] ?? entity;
-    });
+    return text.replace(
+      /&amp;|&lt;|&gt;|&quot;|&#39;|&#x[\da-fA-F]+;|&#\d+;/g,
+      (entity) => {
+        return REVERSE_MAP[entity] ?? entity;
+      },
+    );
   }
   textarea.innerHTML = text;
   return textarea.value;
 }
 
 export function HtmlEntitiesTool() {
-  const [input, setInput] = useState('');
-  const [output, setOutput] = useState('');
-  const [lastAction, setLastAction] = useState<'encode' | 'decode' | null>(null);
+  const [input, setInput] = useState("");
+  const [output, setOutput] = useState("");
+  const [lastAction, setLastAction] = useState<"encode" | "decode" | null>(
+    null,
+  );
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const { toast } = useToast();
 
   const handleEncode = useCallback(() => {
     if (!input.trim()) return;
     setOutput(encodeEntities(input));
-    setLastAction('encode');
-    toast('success', 'HTML entities encoded');
+    setLastAction("encode");
+    toast("success", "HTML entities encoded");
   }, [input, toast]);
 
   const handleDecode = useCallback(() => {
     if (!input.trim()) return;
     setOutput(decodeEntities(input));
-    setLastAction('decode');
-    toast('success', 'HTML entities decoded');
+    setLastAction("decode");
+    toast("success", "HTML entities decoded");
   }, [input, toast]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
+      if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
         handleEncode();
-      } else if (e.key === 'Enter' && e.shiftKey) {
+      } else if (e.key === "Enter" && e.shiftKey) {
         e.preventDefault();
         handleDecode();
       }
     },
-    [handleEncode, handleDecode]
+    [handleEncode, handleDecode],
   );
 
+  const soundEnabled = useSoundStore((s) => s.enabled);
+  const [playTrash] = useSound(macTrashSound, { volume: 0.65, soundEnabled });
 
   const handleClear = useCallback(() => {
-    setInput('');
-    setOutput('');
+    setInput("");
+    setOutput("");
     setLastAction(null);
+    playTrash();
     inputRef.current?.focus();
-  }, []);
+  }, [playTrash]);
 
   useEffect(() => {
-    if (window.matchMedia("(pointer: fine)").matches)
-    inputRef.current?.focus();
+    if (window.matchMedia("(pointer: fine)").matches) inputRef.current?.focus();
   }, []);
 
   const hasInput = input.trim().length > 0;
@@ -87,7 +98,7 @@ export function HtmlEntitiesTool() {
   return (
     <div className="flex h-full flex-col">
       <div
-        className={`flex flex-col items-center justify-center transition-all duration-300 ${hasOutput ? 'py-4' : 'flex-1'}`}
+        className={`flex flex-col items-center justify-center transition-all duration-300 ${hasOutput ? "py-4" : "flex-1"}`}
       >
         {!hasInput && !hasOutput && (
           <motion.p
@@ -104,9 +115,9 @@ export function HtmlEntitiesTool() {
           <textarea
             ref={inputRef}
             value={input}
-            onChange={e => {
+            onChange={(e) => {
               setInput(e.target.value);
-              setOutput('');
+              setOutput("");
               setLastAction(null);
             }}
             onKeyDown={handleKeyDown}
@@ -155,11 +166,15 @@ export function HtmlEntitiesTool() {
               transition={{ delay: 0.05 }}
             >
               <ArrowDown weight="duotone" className="h-3 w-3" />
-              {lastAction === 'encode' ? 'Encoded' : 'Decoded'}
+              {lastAction === "encode" ? "Encoded" : "Decoded"}
             </motion.div>
 
             <div className="relative flex-1 rounded-xl bg-black/25 p-4">
-              <CopyButton text={output} size="md" className="absolute right-3 top-3 text-white/20 transition-colors duration-150 hover:text-white/50" />
+              <CopyButton
+                text={output}
+                size="md"
+                className="absolute right-3 top-3 text-white/20 transition-colors duration-150 hover:text-white/50"
+              />
               <pre className="font-code whitespace-pre-wrap break-all pr-8 text-sm leading-relaxed text-white/85">
                 {output}
               </pre>

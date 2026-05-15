@@ -1,16 +1,21 @@
-'use client';
+"use client";
 
-import { useState, useCallback, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Trash, ArrowDown } from '@phosphor-icons/react';
-import { useToast } from '@/components/toast';
-import { SwipeRail } from '@/components/swipe-rail';
-import { CopyButton } from '@/components/copy-button';
+import { useState, useCallback, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Trash, ArrowDown } from "@phosphor-icons/react";
+import { useToast } from "@/components/toast";
+import { SwipeRail } from "@/components/swipe-rail";
+import { CopyButton } from "@/components/copy-button";
+import { useSound } from "@/hooks/use-sound";
+import { macTrashSound } from "@/sounds/mac-trash";
+import { useSoundStore } from "@/lib/sound-store";
 
 export function Base64Tool() {
-  const [input, setInput] = useState('');
-  const [output, setOutput] = useState('');
-  const [lastAction, setLastAction] = useState<'encode' | 'decode' | null>(null);
+  const [input, setInput] = useState("");
+  const [output, setOutput] = useState("");
+  const [lastAction, setLastAction] = useState<"encode" | "decode" | null>(
+    null,
+  );
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const { toast } = useToast();
 
@@ -18,10 +23,10 @@ export function Base64Tool() {
     if (!input.trim()) return;
     try {
       setOutput(btoa(unescape(encodeURIComponent(input))));
-      setLastAction('encode');
-      toast('success', 'Encoded to Base64');
-    } catch (e: any) {
-      toast('error', e.message);
+      setLastAction("encode");
+      toast("success", "Encoded to Base64");
+    } catch (e: unknown) {
+      toast("error", (e as Error).message);
     }
   }, [input, toast]);
 
@@ -29,36 +34,39 @@ export function Base64Tool() {
     if (!input.trim()) return;
     try {
       setOutput(decodeURIComponent(escape(atob(input.trim()))));
-      setLastAction('decode');
-      toast('success', 'Decoded from Base64');
+      setLastAction("decode");
+      toast("success", "Decoded from Base64");
     } catch {
-      toast('error', 'Invalid Base64 string');
+      toast("error", "Invalid Base64 string");
     }
   }, [input, toast]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
+      if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
         handleEncode();
-      } else if (e.key === 'Enter' && e.shiftKey) {
+      } else if (e.key === "Enter" && e.shiftKey) {
         e.preventDefault();
         handleDecode();
       }
     },
-    [handleEncode, handleDecode]
+    [handleEncode, handleDecode],
   );
 
+  const soundEnabled = useSoundStore((s) => s.enabled);
+  const [playTrash] = useSound(macTrashSound, { volume: 0.65, soundEnabled });
+
   const handleClear = useCallback(() => {
-    setInput('');
-    setOutput('');
+    setInput("");
+    setOutput("");
     setLastAction(null);
+    playTrash();
     inputRef.current?.focus();
-  }, []);
+  }, [playTrash]);
 
   useEffect(() => {
-    if (window.matchMedia("(pointer: fine)").matches)
-    inputRef.current?.focus();
+    if (window.matchMedia("(pointer: fine)").matches) inputRef.current?.focus();
   }, []);
 
   const hasInput = input.trim().length > 0;
@@ -67,7 +75,7 @@ export function Base64Tool() {
   return (
     <div className="flex h-full flex-col">
       <div
-        className={`flex flex-col items-center justify-center transition-all duration-300 ${hasOutput ? 'py-4' : 'flex-1'}`}
+        className={`flex flex-col items-center justify-center transition-all duration-300 ${hasOutput ? "py-4" : "flex-1"}`}
       >
         {!hasInput && !hasOutput && (
           <motion.p
@@ -84,9 +92,9 @@ export function Base64Tool() {
           <textarea
             ref={inputRef}
             value={input}
-            onChange={e => {
+            onChange={(e) => {
               setInput(e.target.value);
-              setOutput('');
+              setOutput("");
               setLastAction(null);
             }}
             onKeyDown={handleKeyDown}
@@ -135,11 +143,15 @@ export function Base64Tool() {
               transition={{ delay: 0.05 }}
             >
               <ArrowDown weight="duotone" className="h-3 w-3" />
-              {lastAction === 'encode' ? 'Encoded' : 'Decoded'}
+              {lastAction === "encode" ? "Encoded" : "Decoded"}
             </motion.div>
 
             <div className="relative flex-1 rounded-xl bg-black/25 p-4">
-              <CopyButton text={output} size="md" className="absolute right-3 top-3 text-white/20 transition-colors duration-150 hover:text-white/50" />
+              <CopyButton
+                text={output}
+                size="md"
+                className="absolute right-3 top-3 text-white/20 transition-colors duration-150 hover:text-white/50"
+              />
               <pre className="font-code whitespace-pre-wrap break-all pr-8 text-sm leading-relaxed text-white/85">
                 {output}
               </pre>

@@ -1,43 +1,164 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Command } from 'cmdk';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from "react";
+import { Command } from "cmdk";
+import { motion, AnimatePresence } from "framer-motion";
+import { playSound } from "@/lib/sound-engine";
+import { select001Sound } from "@/sounds/select-001";
+import { useSoundStore } from "@/lib/sound-store";
 import {
-  MagnifyingGlass, BracketsCurly, Lock, Fingerprint, FileText,
-  Sparkle, ArrowsLeftRight, ShieldCheck, Binary, Link, Code,
-  Key, Hash, TextAa, GitDiff, Clock, Image,
-} from '@phosphor-icons/react';
-import { useRouter } from 'next/navigation';
-import type { ComponentType } from 'react';
+  MagnifyingGlass,
+  Fingerprint,
+  FileText,
+  Sparkle,
+  ArrowsLeftRight,
+  ShieldCheck,
+  Binary,
+  Link,
+  Code,
+  Key,
+  Hash,
+  TextAa,
+  GitDiff,
+  Clock,
+  Image,
+} from "@phosphor-icons/react";
+import { useRouter } from "next/navigation";
+import type { ComponentType } from "react";
 
 type Tool = {
   id: string;
   label: string;
   section: string;
   href: string;
-  icon: ComponentType<any>;
+  icon: ComponentType<{ weight?: string; className?: string }>;
   keywords: string[];
 };
 
 const tools: Tool[] = [
-  { id: 'json-formatter', label: 'Formatter', section: 'JSON', href: '/json', icon: Sparkle, keywords: ['format', 'beautify', 'json', 'yaml', 'toml'] },
-  { id: 'json-converter', label: 'Converter', section: 'JSON', href: '/json', icon: ArrowsLeftRight, keywords: ['convert', 'json', 'yaml', 'toml'] },
-  { id: 'json-validator', label: 'Validator', section: 'JSON', href: '/json', icon: ShieldCheck, keywords: ['validate', 'check', 'json', 'yaml', 'toml'] },
-  { id: 'encode-base64', label: 'Base64', section: 'Encode', href: '/encode', icon: Binary, keywords: ['base64', 'encode', 'decode'] },
-  { id: 'encode-url', label: 'URL Encode', section: 'Encode', href: '/encode/url', icon: Link, keywords: ['url', 'encode', 'decode'] },
-  { id: 'encode-html', label: 'HTML Entities', section: 'Encode', href: '/encode/html', icon: Code, keywords: ['html', 'entities', 'escape'] },
-  { id: 'encode-jwt', label: 'JWT Decoder', section: 'Encode', href: '/encode/jwt', icon: Key, keywords: ['jwt', 'token', 'decode'] },
-  { id: 'gen-uuid', label: 'UUID', section: 'Generate', href: '/generators', icon: Fingerprint, keywords: ['uuid', 'guid', 'random'] },
-  { id: 'gen-lorem', label: 'Lorem Ipsum', section: 'Generate', href: '/generators/lorem', icon: TextAa, keywords: ['lorem', 'placeholder'] },
-  { id: 'gen-hash', label: 'Hash', section: 'Generate', href: '/generators/hash', icon: Hash, keywords: ['hash', 'md5', 'sha'] },
-  { id: 'text-diff', label: 'Diff', section: 'Text', href: '/text', icon: GitDiff, keywords: ['diff', 'compare'] },
-  { id: 'text-markdown', label: 'Markdown', section: 'Text', href: '/text/markdown', icon: FileText, keywords: ['markdown', 'preview'] },
-  { id: 'time-clock', label: 'World Clock', section: 'Time', href: '/time', icon: Clock, keywords: ['time', 'clock', 'timezone', 'world', 'convert', 'unix', 'timestamp'] },
-  { id: 'assets-favicon', label: 'Favicon Generator', section: 'Assets', href: '/assets', icon: Image, keywords: ['favicon', 'icon', 'image', 'png', 'ico', 'apple', 'android'] },
+  {
+    id: "json-formatter",
+    label: "Formatter",
+    section: "JSON",
+    href: "/json",
+    icon: Sparkle,
+    keywords: ["format", "beautify", "json", "yaml", "toml"],
+  },
+  {
+    id: "json-converter",
+    label: "Converter",
+    section: "JSON",
+    href: "/json",
+    icon: ArrowsLeftRight,
+    keywords: ["convert", "json", "yaml", "toml"],
+  },
+  {
+    id: "json-validator",
+    label: "Validator",
+    section: "JSON",
+    href: "/json",
+    icon: ShieldCheck,
+    keywords: ["validate", "check", "json", "yaml", "toml"],
+  },
+  {
+    id: "encode-base64",
+    label: "Base64",
+    section: "Encode",
+    href: "/encode",
+    icon: Binary,
+    keywords: ["base64", "encode", "decode"],
+  },
+  {
+    id: "encode-url",
+    label: "URL Encode",
+    section: "Encode",
+    href: "/encode/url",
+    icon: Link,
+    keywords: ["url", "encode", "decode"],
+  },
+  {
+    id: "encode-html",
+    label: "HTML Entities",
+    section: "Encode",
+    href: "/encode/html",
+    icon: Code,
+    keywords: ["html", "entities", "escape"],
+  },
+  {
+    id: "encode-jwt",
+    label: "JWT Decoder",
+    section: "Encode",
+    href: "/encode/jwt",
+    icon: Key,
+    keywords: ["jwt", "token", "decode"],
+  },
+  {
+    id: "gen-uuid",
+    label: "UUID",
+    section: "Generate",
+    href: "/generators",
+    icon: Fingerprint,
+    keywords: ["uuid", "guid", "random"],
+  },
+  {
+    id: "gen-lorem",
+    label: "Lorem Ipsum",
+    section: "Generate",
+    href: "/generators/lorem",
+    icon: TextAa,
+    keywords: ["lorem", "placeholder"],
+  },
+  {
+    id: "gen-hash",
+    label: "Hash",
+    section: "Generate",
+    href: "/generators/hash",
+    icon: Hash,
+    keywords: ["hash", "md5", "sha"],
+  },
+  {
+    id: "text-diff",
+    label: "Diff",
+    section: "Text",
+    href: "/text",
+    icon: GitDiff,
+    keywords: ["diff", "compare"],
+  },
+  {
+    id: "text-markdown",
+    label: "Markdown",
+    section: "Text",
+    href: "/text/markdown",
+    icon: FileText,
+    keywords: ["markdown", "preview"],
+  },
+  {
+    id: "time-clock",
+    label: "World Clock",
+    section: "Time",
+    href: "/time",
+    icon: Clock,
+    keywords: [
+      "time",
+      "clock",
+      "timezone",
+      "world",
+      "convert",
+      "unix",
+      "timestamp",
+    ],
+  },
+  {
+    id: "assets-favicon",
+    label: "Favicon Generator",
+    section: "Assets",
+    href: "/assets",
+    icon: Image,
+    keywords: ["favicon", "icon", "image", "png", "ico", "apple", "android"],
+  },
 ];
 
-const sections = [...new Set(tools.map(t => t.section))];
+const sections = [...new Set(tools.map((t) => t.section))];
 
 let triggerOpen: (() => void) | null = null;
 
@@ -49,20 +170,27 @@ export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
-  triggerOpen = () => setOpen(true);
+  useEffect(() => {
+    triggerOpen = () => setOpen(true);
+    return () => {
+      triggerOpen = null;
+    };
+  }, []);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
-        setOpen(p => !p);
+        setOpen((p) => !p);
       }
     };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
   }, []);
 
   const navigate = (href: string) => {
+    if (useSoundStore.getState().enabled)
+      playSound(select001Sound.dataUri, { volume: 0.4 });
     setOpen(false);
     router.push(href);
   };
@@ -91,17 +219,20 @@ export function CommandPalette() {
             <Command
               className="flex flex-col"
               filter={(value, search) => {
-                const tool = tools.find(t => t.id === value);
+                const tool = tools.find((t) => t.id === value);
                 if (!tool) return 0;
                 const q = search.toLowerCase();
                 if (tool.label.toLowerCase().includes(q)) return 1;
                 if (tool.section.toLowerCase().includes(q)) return 0.8;
-                if (tool.keywords.some(k => k.includes(q))) return 0.6;
+                if (tool.keywords.some((k) => k.includes(q))) return 0.6;
                 return 0;
               }}
             >
               <div className="flex items-center gap-3 border-b border-white/[0.06] px-4">
-                <MagnifyingGlass weight="duotone" className="h-4 w-4 text-white/25" />
+                <MagnifyingGlass
+                  weight="duotone"
+                  className="h-4 w-4 text-white/25"
+                />
                 <Command.Input
                   placeholder="Search tools..."
                   className="h-11 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-white/25"
@@ -112,15 +243,15 @@ export function CommandPalette() {
                 <Command.Empty className="py-8 text-center text-sm text-white/25">
                   No results
                 </Command.Empty>
-                {sections.map(section => (
+                {sections.map((section) => (
                   <Command.Group
                     key={section}
                     heading={section}
                     className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:pt-3 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-widest [&_[cmdk-group-heading]]:text-white/20"
                   >
                     {tools
-                      .filter(t => t.section === section)
-                      .map(tool => {
+                      .filter((t) => t.section === section)
+                      .map((tool) => {
                         const Icon = tool.icon;
                         return (
                           <Command.Item
