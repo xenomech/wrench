@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useRef, useCallback, useState, useEffect } from 'react';
-import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
-import { CaretRight, DotsSixVertical } from '@phosphor-icons/react';
-import { ShinyText } from '@/components/shiny-text';
+import { useRef, useCallback, useState, useEffect } from "react";
+import { motion, useMotionValue, useTransform, animate } from "framer-motion";
+import { CaretRight, DotsSixVertical } from "@phosphor-icons/react";
+import { ShinyText } from "@/components/shiny-text";
 
 type SwipeRailProps = {
   leftLabel?: string;
@@ -33,7 +33,9 @@ export function SwipeRail({
     const el = trackRef.current;
     if (!el) return;
     setTrackW(el.offsetWidth);
-    const ro = new ResizeObserver(([e]) => { if (e) setTrackW(e.contentRect.width); });
+    const ro = new ResizeObserver(([e]) => {
+      if (e) setTrackW(e.contentRect.width);
+    });
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
@@ -43,41 +45,64 @@ export function SwipeRail({
   const maxL = biDir ? travel / 2 : 0;
   const thumbRest = biDir ? (trackW - THUMB) / 2 : PAD;
 
-  const thumbRightEdge = useTransform(x, v => thumbRest + v + THUMB);
-  const thumbLeftEdge = useTransform(x, v => thumbRest + v);
+  const thumbRightEdge = useTransform(x, (v) => thumbRest + v + THUMB);
+  const thumbLeftEdge = useTransform(x, (v) => thumbRest + v);
 
-  const rightClip = useTransform(thumbRightEdge, px => `inset(0 0 0 ${px}px)`);
-  const leftClip = useTransform(thumbLeftEdge, px => `inset(0 ${trackW - px}px 0 0)`);
+  const rightClip = useTransform(
+    thumbRightEdge,
+    (px) => `inset(0 0 0 ${px}px)`,
+  );
+  const leftClip = useTransform(
+    thumbLeftEdge,
+    (px) => `inset(0 ${trackW - px}px 0 0)`,
+  );
 
   const sR = Math.max(1, maxR);
   const sL = Math.max(1, maxL);
-  const rightFillW = useTransform(x, [0, sR], ['0%', '100%']);
-  const leftFillW = biDir
-    ? useTransform(x, [-sL, 0], ['100%', '0%'])
-    : useMotionValue('0%');
+  const rightFillW = useTransform(x, [0, sR], ["0%", "100%"]);
+  const leftFillRaw = useTransform(x, [-sL, 0], ["100%", "0%"]);
+  const leftFillZero = useMotionValue("0%");
+  const leftFillW = biDir ? leftFillRaw : leftFillZero;
 
-  const thumbGlow = useTransform(x, v => {
+  const thumbGlow = useTransform(x, (v) => {
     const ratio = biDir ? Math.abs(v) / sR : v / sR;
     return Math.min(ratio * 0.4, 0.4);
   });
-  const thumbShadow = useTransform(thumbGlow, g =>
-    `0 0 ${g * 40}px rgba(255,255,255,${g}), 0 2px 8px rgba(0,0,0,0.4)`
+  const thumbShadow = useTransform(
+    thumbGlow,
+    (g) => `0 0 ${g * 40}px rgba(255,255,255,${g}), 0 2px 8px rgba(0,0,0,0.4)`,
   );
 
   const handleDragEnd = useCallback(() => {
     const cur = x.get();
+    if (
+      (maxR > 0 && cur / maxR >= THRESHOLD) ||
+      (biDir && maxL > 0 && cur / -maxL >= THRESHOLD)
+    ) {
+      (document.activeElement as HTMLElement)?.blur();
+    }
     if (maxR > 0 && cur / maxR >= THRESHOLD && onSwipeRight) {
-      animate(x, maxR, { type: 'spring', stiffness: 500, damping: 30, onComplete: () => {
-        animate(x, 0, { type: 'spring', stiffness: 400, damping: 28 });
-        onSwipeRight();
-      }});
+      animate(x, maxR, {
+        type: "spring",
+        stiffness: 500,
+        damping: 30,
+        onComplete: () => {
+          animate(x, 0, { type: "spring", stiffness: 400, damping: 28 });
+          onSwipeRight();
+        },
+      });
     } else if (biDir && maxL > 0 && cur / -maxL >= THRESHOLD && onSwipeLeft) {
-      animate(x, -maxL, { type: 'spring', stiffness: 500, damping: 30, onComplete: () => {
-        animate(x, 0, { type: 'spring', stiffness: 400, damping: 28 });
-        onSwipeLeft();
-      }});
+      animate(x, -maxL, {
+        type: "spring",
+        stiffness: 500,
+        damping: 30,
+        onComplete: () => {
+          animate(x, 0, { type: "spring", stiffness: 400, damping: 28 });
+          onSwipeLeft();
+        },
+      });
     } else {
-      animate(x, 0, { type: 'spring', stiffness: 500, damping: 35 });
+      animate(x, 0, { type: "spring", stiffness: 500, damping: 35 });
     }
   }, [x, maxR, maxL, biDir, onSwipeLeft, onSwipeRight]);
 
@@ -87,8 +112,10 @@ export function SwipeRail({
       className="relative flex w-full items-center overflow-hidden rounded-full"
       style={{
         height: THUMB + PAD * 2,
-        background: 'linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.04) 100%)',
-        boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(255,255,255,0.05)',
+        background:
+          "linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.04) 100%)",
+        boxShadow:
+          "inset 0 1px 3px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(255,255,255,0.05)",
       }}
     >
       {/* Fill bars */}
@@ -97,7 +124,8 @@ export function SwipeRail({
           className="absolute left-0 top-0 h-full"
           style={{
             width: leftFillW,
-            background: 'linear-gradient(90deg, rgba(255,255,255,0.06) 0%, transparent 100%)',
+            background:
+              "linear-gradient(90deg, rgba(255,255,255,0.06) 0%, transparent 100%)",
           }}
         />
       )}
@@ -106,15 +134,15 @@ export function SwipeRail({
         style={{
           width: rightFillW,
           background: biDir
-            ? 'linear-gradient(270deg, rgba(255,255,255,0.06) 0%, transparent 100%)'
-            : 'linear-gradient(270deg, rgba(255,255,255,0.04) 0%, transparent 100%)',
+            ? "linear-gradient(270deg, rgba(255,255,255,0.06) 0%, transparent 100%)"
+            : "linear-gradient(270deg, rgba(255,255,255,0.04) 0%, transparent 100%)",
         }}
       />
 
       {/* Right label */}
       {rightLabel && (
         <motion.div
-          className={`pointer-events-none absolute inset-0 z-10 flex items-center ${biDir ? 'justify-end pr-5' : 'justify-center'}`}
+          className={`pointer-events-none absolute inset-0 z-10 flex items-center ${biDir ? "justify-end pr-5" : "justify-center"}`}
           style={{ clipPath: rightClip }}
         >
           <ShinyText
@@ -155,17 +183,18 @@ export function SwipeRail({
           height: THUMB,
           left: biDir ? `calc(50% - ${THUMB / 2}px)` : `${PAD}px`,
           x,
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.06) 100%)',
+          background:
+            "linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.06) 100%)",
           boxShadow: thumbShadow,
-          border: '1px solid rgba(255,255,255,0.1)',
-          cursor: disabled ? 'not-allowed' : 'grab',
+          border: "1px solid rgba(255,255,255,0.1)",
+          cursor: disabled ? "not-allowed" : "grab",
         }}
-        drag={disabled ? false : 'x'}
+        drag={disabled ? false : "x"}
         dragConstraints={{ left: biDir ? -maxL : 0, right: maxR }}
         dragElastic={0}
         dragMomentum={false}
         onDragEnd={handleDragEnd}
-        whileTap={{ cursor: 'grabbing', scale: 0.96 }}
+        whileTap={{ cursor: "grabbing", scale: 0.96 }}
       >
         {biDir ? (
           <DotsSixVertical weight="duotone" className="h-4 w-4 text-white/40" />
