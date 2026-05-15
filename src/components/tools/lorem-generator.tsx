@@ -79,7 +79,7 @@ export function LoremGenerator() {
 
       <div
         className="hide-scroll flex min-h-0 flex-1 items-center justify-center overflow-auto px-4 active:scale-[0.99] md:px-8 md:active:scale-100"
-        onClick={generate}
+        onClick={() => generate()}
       >
         <div className="max-w-2xl py-4 text-center">
           <AnimatePresence mode="wait">
