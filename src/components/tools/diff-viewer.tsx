@@ -257,14 +257,16 @@ export function DiffViewer() {
           >
             <FileCode weight="duotone" className="h-4 w-4" /> Sample
           </ToolbarButton>
-          <ToolbarButton
-            onClick={() => {
-              setOriginal("");
-              setModified("");
-            }}
-          >
-            <Trash weight="duotone" className="h-4 w-4" /> Clear
-          </ToolbarButton>
+          {(original.trim() || modified.trim()) && (
+            <ToolbarButton
+              onClick={() => {
+                setOriginal("");
+                setModified("");
+              }}
+            >
+              <Trash weight="duotone" className="h-4 w-4" /> Clear
+            </ToolbarButton>
+          )}
           {hasChanges && (
             <ToolbarButton onClick={handleCopy}>
               {copied ? (
