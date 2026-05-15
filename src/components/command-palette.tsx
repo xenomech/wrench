@@ -31,7 +31,10 @@ type Tool = {
   label: string;
   section: string;
   href: string;
-  icon: ComponentType<{ weight?: string; className?: string }>;
+  icon: ComponentType<{
+    weight?: "duotone" | "bold" | "fill" | "light" | "regular" | "thin";
+    className?: string;
+  }>;
   keywords: string[];
 };
 
