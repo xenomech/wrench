@@ -18,9 +18,53 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ["400", "500"],
 });
 
+const siteUrl = "https://wrenchkit.justgokul.dev";
+
 export const metadata: Metadata = {
-  title: "WrenchKit",
-  description: "Developer tools for JSON, YAML, TOML and more",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "WrenchKit",
+    template: "%s | WrenchKit",
+  },
+  description:
+    "Developer tools for JSON, encoding, hashing, text diffing, and more — fast, private, and runs entirely in your browser.",
+  keywords: [
+    "developer tools",
+    "JSON formatter",
+    "Base64 encoder",
+    "UUID generator",
+    "hash generator",
+    "JWT decoder",
+    "URL encoder",
+    "text diff",
+    "markdown preview",
+    "lorem ipsum",
+    "favicon generator",
+  ],
+  authors: [{ name: "Gokul" }],
+  creator: "Gokul",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: siteUrl,
+    siteName: "WrenchKit",
+    title: "WrenchKit",
+    description:
+      "Developer tools for JSON, encoding, hashing, text diffing, and more — fast, private, and runs entirely in your browser.",
+  },
+  twitter: {
+    card: "summary",
+    title: "WrenchKit",
+    description:
+      "Developer tools for JSON, encoding, hashing, text diffing, and more — fast, private, and runs entirely in your browser.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: siteUrl,
+  },
 };
 
 export default function RootLayout({
@@ -31,15 +75,35 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/apple-touch-icon.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/favicon-32x32.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/favicon-16x16.png"
+        />
         <link rel="manifest" href="/site.webmanifest" />
         <meta name="msapplication-TileColor" content="#100f18" />
         <meta name="theme-color" content="#100f18" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, viewport-fit=cover"
+        />
       </head>
-      <body className={`${jakarta.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
+      <body
+        className={`${jakarta.variable} ${jetbrainsMono.variable}`}
+        suppressHydrationWarning
+      >
         <Providers>
           <div className="bg-canvas flex h-[100dvh] flex-col overflow-hidden">
             <TopBar />
