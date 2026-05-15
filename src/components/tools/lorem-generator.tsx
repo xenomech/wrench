@@ -1,49 +1,62 @@
-'use client';
+"use client";
 
-import { useState, useCallback, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { generateWords, generateSentences, generateParagraphs } from '@/lib/lorem';
-import { CopyButton } from '@/components/copy-button';
+import { useState, useCallback, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  generateWords,
+  generateSentences,
+  generateParagraphs,
+} from "@/lib/lorem";
+import { CopyButton } from "@/components/copy-button";
 
-type Unit = 'words' | 'sentences' | 'paragraphs';
+type Unit = "words" | "sentences" | "paragraphs";
+
+function generateText(unit: Unit): string {
+  switch (unit) {
+    case "words":
+      return generateWords(12);
+    case "sentences":
+      return generateSentences(3);
+    case "paragraphs":
+      return generateParagraphs(2);
+  }
+}
 
 export function LoremGenerator() {
-  const [unit, setUnit] = useState<Unit>('sentences');
-  const [output, setOutput] = useState('');
+  const [unit, setUnit] = useState<Unit>("sentences");
+  const [output, setOutput] = useState(() => generateText("sentences"));
   const [generation, setGeneration] = useState(0);
-  const generate = useCallback(() => {
-    let text = '';
-    switch (unit) {
-      case 'words':
-        text = generateWords(12);
-        break;
-      case 'sentences':
-        text = generateSentences(3);
-        break;
-      case 'paragraphs':
-        text = generateParagraphs(2);
-        break;
-    }
-    setOutput(text);
-    setGeneration(g => g + 1);
-  }, [unit]);
+  const generate = useCallback(
+    (overrideUnit?: Unit) => {
+      setOutput(generateText(overrideUnit ?? unit));
+      setGeneration((g) => g + 1);
+    },
+    [unit],
+  );
 
-  useEffect(() => {
-    generate();
-  }, [unit]);
+  const handleUnitChange = useCallback(
+    (newUnit: Unit) => {
+      setUnit(newUnit);
+      generate(newUnit);
+    },
+    [generate],
+  );
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (
-        e.code === 'Space' &&
-        !(e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement)
+        e.code === "Space" &&
+        !(
+          e.target instanceof HTMLInputElement ||
+          e.target instanceof HTMLTextAreaElement
+        )
       ) {
         e.preventDefault();
         generate();
       }
     };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
   }, [generate]);
 
   const words = output.split(/(\s+)/);
@@ -51,12 +64,12 @@ export function LoremGenerator() {
   return (
     <div className="flex h-full flex-col items-center">
       <div className="flex items-center gap-4 pb-6 pt-2">
-        {(['words', 'sentences', 'paragraphs'] as Unit[]).map(u => (
+        {(["words", "sentences", "paragraphs"] as Unit[]).map((u) => (
           <button
             key={u}
-            onClick={() => setUnit(u)}
+            onClick={() => handleUnitChange(u)}
             className={`text-xs uppercase tracking-widest transition-colors duration-150 ${
-              unit === u ? 'text-white/70' : 'text-white/20 hover:text-white/40'
+              unit === u ? "text-white/70" : "text-white/20 hover:text-white/40"
             }`}
           >
             {u}
@@ -76,7 +89,7 @@ export function LoremGenerator() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
-              className="font-sans text-base leading-relaxed md:text-lg"
+              className="font-sans text-sm leading-relaxed md:text-lg"
             >
               {words.map((word, i) => {
                 if (/^\s+$/.test(word)) return <span key={i}>{word}</span>;
@@ -102,7 +115,13 @@ export function LoremGenerator() {
       </div>
 
       <div className="flex flex-col items-center gap-3 pb-4">
-        <CopyButton text={output} label="Copy" copiedLabel="Copied" size="sm" className="flex items-center gap-1.5 text-xs text-white/25 transition-colors duration-150 hover:text-white/50" />
+        <CopyButton
+          text={output}
+          label="Copy"
+          copiedLabel="Copied"
+          size="sm"
+          className="flex items-center gap-1.5 text-xs text-white/25 transition-colors duration-150 hover:text-white/50"
+        />
 
         <motion.p
           className="text-[11px] uppercase tracking-widest text-white/30"
