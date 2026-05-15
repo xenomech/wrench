@@ -47,7 +47,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <ToastPrimitive.Provider duration={2500} swipeDirection="up">
+    <ToastPrimitive.Provider duration={1000} swipeDirection="up">
       <ToastContext.Provider value={{ toast }}>
         {children}
         {toasts.map((t) => {
