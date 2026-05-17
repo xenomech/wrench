@@ -1,7 +1,15 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  useLayoutEffect,
+  type KeyboardEvent,
+} from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import * as Popover from "@radix-ui/react-popover";
 import {
   Image,
   DownloadSimple,
@@ -14,6 +22,8 @@ import {
   MagnifyingGlassMinus,
   MagnifyingGlassPlus,
   ArrowsOutCardinal,
+  LinkSimple,
+  Trash,
 } from "@phosphor-icons/react";
 import { useToast } from "@/components/toast";
 import { saveAs } from "file-saver";
@@ -28,6 +38,7 @@ type Background = {
   value: string;
   className: string;
   style?: React.CSSProperties;
+  imageUrl?: string;
 };
 
 const BACKGROUNDS: Background[] = [
@@ -470,15 +481,39 @@ export function ScreenshotTool() {
   const [frameTheme, setFrameTheme] = useState<FrameTheme>("dark");
   const [background, setBackground] = useState<Background>(BACKGROUNDS[1]!);
   const [padding, setPadding] = useState(64);
+  const [customBgUrl, setCustomBgUrl] = useState("");
+  const [customBgInput, setCustomBgInput] = useState("");
+  const [customBgError, setCustomBgError] = useState(false);
+  const [bgPopoverOpen, setBgPopoverOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [transform, setTransform] = useState<ImageTransform>({
     scale: 1,
     x: 0,
     y: 0,
   });
+  const [canvasScale, setCanvasScale] = useState(1);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+
+  useLayoutEffect(() => {
+    const container = containerRef.current;
+    if (!container || !imageSrc) return;
+    const observer = new ResizeObserver(([entry]) => {
+      if (!entry) return;
+      const { width, height } = entry.contentRect;
+      const framePad = padding * 2;
+      const frameW =
+        (frame === "phone" ? 290 : frame === "tablet" ? 600 : 720) + framePad;
+      const frameH =
+        (frame === "phone" ? 600 : frame === "tablet" ? 440 : 405) + framePad;
+      const scale = Math.min(1, width / frameW, height / frameH);
+      setCanvasScale(scale);
+    });
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [imageSrc, frame, padding]);
 
   const handleFile = useCallback((file: File) => {
     const url = URL.createObjectURL(file);
@@ -491,19 +526,247 @@ export function ScreenshotTool() {
     setImageSrc(null);
   }, [imageSrc]);
 
-  const handleExport = useCallback(async () => {
-    const el = previewRef.current;
-    if (!el || !imageSrc) return;
+  const applyCustomBg = useCallback((url: string) => {
+    if (!url.trim()) return;
+    setCustomBgError(false);
+    const img = new window.Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      setCustomBgUrl(url.trim());
+      setBackground({
+        id: "custom-image",
+        label: "Custom",
+        value: "custom-image",
+        className: "",
+        imageUrl: url.trim(),
+        style: {
+          backgroundImage: `url(${url.trim()})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        },
+      });
+      setBgPopoverOpen(false);
+    };
+    img.onerror = () => {
+      setCustomBgError(true);
+    };
+    img.src = url.trim();
+  }, []);
 
+  const clearCustomBg = useCallback(() => {
+    setCustomBgUrl("");
+    setCustomBgInput("");
+    setCustomBgError(false);
+    setBackground(BACKGROUNDS[1]!);
+  }, []);
+
+  const handleExport = useCallback(async () => {
+    if (!imageSrc) return;
     setExporting(true);
     try {
-      const { default: html2canvas } = await import("html2canvas-pro");
-      const canvas = await html2canvas(el, {
-        backgroundColor: null,
-        scale: 2,
-        useCORS: true,
-        logging: false,
+      const img = new window.Image();
+      img.crossOrigin = "anonymous";
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = reject;
+        img.src = imageSrc;
       });
+
+      const frameSizes = {
+        browser: { w: 720, h: 405, chrome: 42 },
+        phone: { w: 290, h: 600, chrome: 0 },
+        tablet: { w: 600, h: 440, chrome: 0 },
+      };
+      const fs = frameSizes[frame];
+      const totalW = fs.w + padding * 2;
+      const totalH = fs.h + padding * 2;
+      const dpr = 4;
+
+      const canvas = document.createElement("canvas");
+      canvas.width = totalW * dpr;
+      canvas.height = totalH * dpr;
+      const ctx = canvas.getContext("2d")!;
+      ctx.scale(dpr, dpr);
+
+      // Background
+      const bg = background;
+      if (bg.imageUrl) {
+        const bgImg = new window.Image();
+        bgImg.crossOrigin = "anonymous";
+        await new Promise<void>((resolve, reject) => {
+          bgImg.onload = () => resolve();
+          bgImg.onerror = reject;
+          bgImg.src = bg.imageUrl!;
+        });
+        const bgAspect = bgImg.naturalWidth / bgImg.naturalHeight;
+        const canvasAspect = totalW / totalH;
+        let sw: number, sh: number, sx: number, sy: number;
+        if (bgAspect > canvasAspect) {
+          sh = bgImg.naturalHeight;
+          sw = sh * canvasAspect;
+          sx = (bgImg.naturalWidth - sw) / 2;
+          sy = 0;
+        } else {
+          sw = bgImg.naturalWidth;
+          sh = sw / canvasAspect;
+          sx = 0;
+          sy = (bgImg.naturalHeight - sh) / 2;
+        }
+        ctx.drawImage(bgImg, sx, sy, sw, sh, 0, 0, totalW, totalH);
+      } else if (bg.style?.background) {
+        const temp = document.createElement("div");
+        temp.style.cssText = `width:${totalW}px;height:${totalH}px;position:fixed;left:-9999px;top:-9999px;background:${bg.style.background}`;
+        document.body.appendChild(temp);
+        const { default: html2canvas } = await import("html2canvas-pro");
+        const bgCanvas = await html2canvas(temp, {
+          backgroundColor: null,
+          scale: dpr,
+          width: totalW,
+          height: totalH,
+          logging: false,
+        });
+        ctx.drawImage(bgCanvas, 0, 0, totalW, totalH);
+        document.body.removeChild(temp);
+      } else if (bg.id === "transparent") {
+        // leave transparent
+      }
+
+      // Frame area
+      const fx = padding;
+      const fy = padding;
+      const isDark = frameTheme === "dark";
+      const screenBg = isDark ? "#1a1a1e" : "#ffffff";
+      const radius = frame === "browser" ? 12 : frame === "phone" ? 28 : 24;
+
+      ctx.save();
+      // Outer frame clip
+      const outerPath = new Path2D();
+      outerPath.roundRect(fx, fy, fs.w, fs.h, radius);
+      ctx.clip(outerPath);
+
+      if (frame === "browser") {
+        // Title bar
+        const chromeBg = isDark ? "#202025" : "#e8e8ec";
+        ctx.fillStyle = chromeBg;
+        ctx.fillRect(fx, fy, fs.w, fs.chrome);
+
+        // Traffic lights
+        const dots = [{ c: "#ff5f57" }, { c: "#febc2e" }, { c: "#28c840" }];
+        dots.forEach((d, i) => {
+          ctx.fillStyle = d.c;
+          ctx.beginPath();
+          ctx.arc(fx + 16 + i * 15, fy + fs.chrome / 2, 5, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        // Address bar pill
+        const barBg = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)";
+        ctx.fillStyle = barBg;
+        const barW = fs.w * 0.4;
+        const barH = 16;
+        const barX = fx + (fs.w - barW) / 2;
+        const barY = fy + (fs.chrome - barH) / 2;
+        const barPath = new Path2D();
+        barPath.roundRect(barX, barY, barW, barH, 6);
+        ctx.fill(barPath);
+
+        // Screen area
+        const screenY = fy + fs.chrome;
+        const screenH = fs.h - fs.chrome;
+        ctx.fillStyle = screenBg;
+        ctx.fillRect(fx, screenY, fs.w, screenH);
+
+        // Draw image in screen area
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(fx, screenY, fs.w, screenH);
+        ctx.clip();
+        const cx = fx + fs.w / 2 + transform.x;
+        const cy = screenY + screenH / 2 + transform.y;
+        ctx.translate(cx, cy);
+        ctx.scale(transform.scale, transform.scale);
+        // object-contain within screen area
+        const imgAspect = img.naturalWidth / img.naturalHeight;
+        const areaAspect = fs.w / screenH;
+        let drawW: number, drawH: number;
+        if (imgAspect > areaAspect) {
+          drawW = fs.w;
+          drawH = fs.w / imgAspect;
+        } else {
+          drawH = screenH;
+          drawW = screenH * imgAspect;
+        }
+        ctx.drawImage(img, -drawW / 2, -drawH / 2, drawW, drawH);
+        ctx.restore();
+      } else {
+        const border = frame === "phone" ? 6 : 8;
+
+        // Device border
+        ctx.fillStyle = isDark ? "#2a2a2e" : "#e0e0e4";
+        ctx.fillRect(fx, fy, fs.w, fs.h);
+
+        // Inner screen
+        const innerX = fx + border;
+        const innerY = fy + border;
+        const innerW = fs.w - border * 2;
+        const innerH = fs.h - border * 2;
+        const innerRadius = Math.max(0, radius - border);
+
+        ctx.save();
+        const innerPath = new Path2D();
+        innerPath.roundRect(innerX, innerY, innerW, innerH, innerRadius);
+        ctx.clip(innerPath);
+
+        ctx.fillStyle = screenBg;
+        ctx.fillRect(innerX, innerY, innerW, innerH);
+
+        // Draw image
+        const cx = innerX + innerW / 2 + transform.x;
+        const cy = innerY + innerH / 2 + transform.y;
+        ctx.translate(cx, cy);
+        ctx.scale(transform.scale, transform.scale);
+        const imgAspect = img.naturalWidth / img.naturalHeight;
+        const areaAspect = innerW / innerH;
+        let drawW: number, drawH: number;
+        if (imgAspect > areaAspect) {
+          drawW = innerW;
+          drawH = innerW / imgAspect;
+        } else {
+          drawH = innerH;
+          drawW = innerH * imgAspect;
+        }
+        ctx.drawImage(img, -drawW / 2, -drawH / 2, drawW, drawH);
+        ctx.restore();
+
+        // Phone notch
+        if (frame === "phone") {
+          ctx.fillStyle = isDark ? "#1a1a1e" : "#d4d4d8";
+          const notchW = 112;
+          const notchH = 24;
+          const notchPath = new Path2D();
+          const notchX = fx + (fs.w - notchW) / 2;
+          notchPath.roundRect(
+            notchX,
+            fy + border,
+            notchW,
+            notchH,
+            [0, 0, 16, 16],
+          );
+          ctx.fill(notchPath);
+        }
+      }
+      ctx.restore();
+
+      // Shadow (draw frame outline for definition)
+      ctx.save();
+      ctx.globalAlpha = 0.15;
+      ctx.strokeStyle = "#000";
+      ctx.lineWidth = 1;
+      const outlinePath = new Path2D();
+      outlinePath.roundRect(fx, fy, fs.w, fs.h, radius);
+      ctx.stroke(outlinePath);
+      ctx.restore();
+
       canvas.toBlob((blob) => {
         if (blob) {
           saveAs(blob, "screenshot-mockup.png");
@@ -515,7 +778,7 @@ export function ScreenshotTool() {
     } finally {
       setExporting(false);
     }
-  }, [imageSrc, toast]);
+  }, [imageSrc, frame, frameTheme, background, padding, transform, toast]);
 
   const frameOptions = [
     {
@@ -559,14 +822,15 @@ export function ScreenshotTool() {
       <AnimatePresence>
         {imageSrc && (
           <motion.div
-            className="flex min-h-0 flex-1 flex-col gap-4 md:flex-row"
+            className="flex min-h-0 flex-1 flex-col overflow-auto hide-scroll gap-4 md:flex-row"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25 }}
           >
             {/* Canvas */}
             <div
-              className="hide-scroll flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-auto rounded-2xl border border-white/[0.06] p-4"
+              ref={containerRef}
+              className="relative min-h-[240px] min-w-0 flex-1 overflow-hidden rounded-2xl border border-white/[0.06]"
               style={{
                 backgroundImage:
                   "radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)",
@@ -575,120 +839,216 @@ export function ScreenshotTool() {
               }}
             >
               <div
-                ref={previewRef}
-                className={`inline-flex shrink-0 items-center justify-center ${background.className}`}
-                style={{ padding, ...background.style }}
+                className="absolute inset-0 flex items-center justify-center"
+                style={{
+                  transform: `scale(${canvasScale})`,
+                }}
               >
-                {frame === "browser" && (
-                  <BrowserFrame
-                    src={imageSrc}
-                    theme={frameTheme}
-                    transform={transform}
-                    onTransformChange={setTransform}
-                  />
-                )}
-                {frame === "phone" && (
-                  <PhoneFrame
-                    src={imageSrc}
-                    theme={frameTheme}
-                    transform={transform}
-                    onTransformChange={setTransform}
-                  />
-                )}
-                {frame === "tablet" && (
-                  <TabletFrame
-                    src={imageSrc}
-                    theme={frameTheme}
-                    transform={transform}
-                    onTransformChange={setTransform}
-                  />
-                )}
+                <div
+                  ref={previewRef}
+                  className={`inline-flex shrink-0 items-center justify-center ${background.className}`}
+                  style={{ padding, ...background.style }}
+                >
+                  {frame === "browser" && (
+                    <BrowserFrame
+                      src={imageSrc}
+                      theme={frameTheme}
+                      transform={transform}
+                      onTransformChange={setTransform}
+                    />
+                  )}
+                  {frame === "phone" && (
+                    <PhoneFrame
+                      src={imageSrc}
+                      theme={frameTheme}
+                      transform={transform}
+                      onTransformChange={setTransform}
+                    />
+                  )}
+                  {frame === "tablet" && (
+                    <TabletFrame
+                      src={imageSrc}
+                      theme={frameTheme}
+                      transform={transform}
+                      onTransformChange={setTransform}
+                    />
+                  )}
+                </div>
               </div>
             </div>
 
             {/* Toolbar */}
-            <div className="hide-scroll flex w-full shrink-0 flex-col gap-5 overflow-auto pb-4 md:w-56 md:pb-0 lg:w-64">
-              {/* Frame type */}
-              <div className="flex flex-col gap-1.5">
-                <span className="text-[10px] uppercase tracking-widest text-white/30">
-                  Frame
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {frameOptions.map((opt) => {
-                    const Icon = opt.icon;
-                    const active = frame === opt.value;
-                    return (
+            <div className="hide-scroll flex w-full shrink-0 flex-col gap-4 overflow-auto pb-4 md:w-56 md:gap-5 md:pb-0 lg:w-64">
+              {/* Frame + Theme row on mobile, stacked on desktop */}
+              <div className="flex gap-4 md:flex-col md:gap-5">
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-[10px] uppercase tracking-widest text-white/30">
+                    Frame
+                  </span>
+                  <div className="flex flex-wrap gap-1">
+                    {frameOptions.map((opt) => {
+                      const Icon = opt.icon;
+                      const active = frame === opt.value;
+                      return (
+                        <button
+                          key={opt.id}
+                          onClick={() => setFrame(opt.value)}
+                          className={`flex items-center gap-1 rounded-lg px-2 py-1.5 text-[11px] font-medium transition-all duration-150 md:gap-1.5 md:px-2.5 ${
+                            active
+                              ? "bg-white/[0.1] text-white/80"
+                              : "text-white/30 hover:bg-white/[0.04] hover:text-white/50"
+                          }`}
+                        >
+                          <Icon className="h-3.5 w-3.5" />
+                          <span className="hidden md:inline">{opt.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-[10px] uppercase tracking-widest text-white/30">
+                    Theme
+                  </span>
+                  <div className="flex gap-1 md:gap-1.5">
+                    {(["dark", "light"] as const).map((t) => (
                       <button
-                        key={opt.id}
-                        onClick={() => setFrame(opt.value)}
-                        className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] font-medium transition-all duration-150 ${
-                          active
+                        key={t}
+                        onClick={() => setFrameTheme(t)}
+                        className={`flex items-center gap-1 rounded-lg px-2 py-1.5 text-[11px] font-medium transition-all duration-150 md:gap-1.5 md:px-2.5 ${
+                          frameTheme === t
                             ? "bg-white/[0.1] text-white/80"
                             : "text-white/30 hover:bg-white/[0.04] hover:text-white/50"
                         }`}
                       >
-                        <Icon className="h-3.5 w-3.5" />
-                        {opt.label}
+                        {t === "dark" ? (
+                          <Moon className="h-3.5 w-3.5" />
+                        ) : (
+                          <Sun className="h-3.5 w-3.5" />
+                        )}
+                        <span className="hidden md:inline">
+                          {t === "dark" ? "Dark" : "Light"}
+                        </span>
                       </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Theme toggle */}
-              <div className="flex flex-col gap-1.5">
-                <span className="text-[10px] uppercase tracking-widest text-white/30">
-                  Theme
-                </span>
-                <div className="flex gap-1.5">
-                  {(["dark", "light"] as const).map((t) => (
-                    <button
-                      key={t}
-                      onClick={() => setFrameTheme(t)}
-                      className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] font-medium transition-all duration-150 ${
-                        frameTheme === t
-                          ? "bg-white/[0.1] text-white/80"
-                          : "text-white/30 hover:bg-white/[0.04] hover:text-white/50"
-                      }`}
-                    >
-                      {t === "dark" ? (
-                        <Moon className="h-3.5 w-3.5" />
-                      ) : (
-                        <Sun className="h-3.5 w-3.5" />
-                      )}
-                      {t === "dark" ? "Dark" : "Light"}
-                    </button>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
 
               {/* Background */}
-              <OptionGroup
-                label="Background"
-                options={BACKGROUNDS.map((b) => ({
-                  id: b.id,
-                  label: b.label,
-                  value: b.id,
-                }))}
-                value={background.id}
-                onChange={(id) =>
-                  setBackground(BACKGROUNDS.find((b) => b.id === id)!)
-                }
-                renderOption={(opt, active) => {
-                  const bg = BACKGROUNDS.find((b) => b.id === opt.id)!;
-                  return (
-                    <div
-                      className={`h-6 w-6 rounded-lg border-2 transition-all duration-150 ${bg.className} ${
-                        active
-                          ? "border-white/40 scale-110"
-                          : "border-white/[0.08] hover:border-white/20"
-                      }`}
-                      style={bg.style}
-                      title={opt.label}
-                    />
-                  );
-                }}
-              />
+              <div className="flex flex-col gap-1.5">
+                <span className="text-[10px] uppercase tracking-widest text-white/30">
+                  Background
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {BACKGROUNDS.map((bg) => {
+                    const active = background.id === bg.id;
+                    return (
+                      <button
+                        key={bg.id}
+                        onClick={() => {
+                          setBackground(bg);
+                        }}
+                        className="focus:outline-none"
+                      >
+                        <div
+                          className={`h-6 w-6 rounded-lg border-2 transition-all duration-150 ${bg.className} ${
+                            active
+                              ? "border-white/40 scale-110"
+                              : "border-white/[0.08] hover:border-white/20"
+                          }`}
+                          style={bg.style}
+                          title={bg.label}
+                        />
+                      </button>
+                    );
+                  })}
+                  <Popover.Root
+                    open={bgPopoverOpen}
+                    onOpenChange={setBgPopoverOpen}
+                  >
+                    <Popover.Trigger asChild>
+                      <button className="focus:outline-none">
+                        <div
+                          className={`flex h-6 w-6 items-center justify-center rounded-lg border-2 transition-all duration-150 ${
+                            background.id === "custom-image"
+                              ? "border-white/40 scale-110"
+                              : "border-white/[0.08] hover:border-white/20"
+                          }`}
+                          style={
+                            customBgUrl
+                              ? {
+                                  backgroundImage: `url(${customBgUrl})`,
+                                  backgroundSize: "cover",
+                                  backgroundPosition: "center",
+                                }
+                              : undefined
+                          }
+                          title="Custom image"
+                        >
+                          {!customBgUrl && (
+                            <LinkSimple className="h-3 w-3 text-white/25" />
+                          )}
+                        </div>
+                      </button>
+                    </Popover.Trigger>
+                    <Popover.Portal>
+                      <Popover.Content
+                        side="bottom"
+                        align="end"
+                        sideOffset={8}
+                        className="z-50 w-52 rounded-xl border border-white/[0.08] bg-[#161618] p-3 shadow-xl shadow-black/40"
+                      >
+                        <div className="flex flex-col gap-2.5">
+                          <span className="text-[10px] uppercase tracking-widest text-white/30">
+                            Image URL
+                          </span>
+                          <input
+                            type="text"
+                            value={customBgInput}
+                            onChange={(e) => {
+                              setCustomBgInput(e.target.value);
+                              setCustomBgError(false);
+                            }}
+                            onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
+                              if (e.key === "Enter")
+                                applyCustomBg(customBgInput);
+                            }}
+                            autoFocus
+                            placeholder="https://..."
+                            className="w-full rounded-lg bg-white/[0.04] px-2.5 py-2 text-[11px] text-white/60 placeholder:text-white/15 focus:outline-none focus:ring-1 focus:ring-white/[0.1]"
+                          />
+                          {customBgError && (
+                            <span className="text-[10px] text-red-400/60">
+                              Failed to load image
+                            </span>
+                          )}
+                          {customBgUrl ? (
+                            <button
+                              onClick={() => {
+                                clearCustomBg();
+                                setBgPopoverOpen(false);
+                              }}
+                              className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-red-500/[0.08] py-1.5 text-[11px] font-medium text-red-400/60 transition-colors hover:bg-red-500/[0.14] hover:text-red-400/80"
+                            >
+                              <Trash className="h-3 w-3" />
+                              Remove
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => applyCustomBg(customBgInput)}
+                              className="w-full rounded-lg bg-white/[0.06] py-1.5 text-[11px] font-medium text-white/50 transition-colors hover:bg-white/[0.1] hover:text-white/70"
+                            >
+                              Apply
+                            </button>
+                          )}
+                        </div>
+                      </Popover.Content>
+                    </Popover.Portal>
+                  </Popover.Root>
+                </div>
+              </div>
 
               {/* Padding */}
               <OptionGroup
@@ -756,24 +1116,25 @@ export function ScreenshotTool() {
               </div>
 
               {/* Actions */}
-              <div className="mt-auto flex flex-col gap-2">
+              <div className="flex gap-2 md:mt-auto flex-col">
                 <button
                   onClick={handleExport}
                   disabled={exporting}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-white/[0.06] py-2.5 text-xs font-medium text-white/60 transition-colors hover:bg-white/[0.1] hover:text-white/80 disabled:opacity-40"
+                  className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-white/[0.06] py-2.5 text-xs font-medium text-white/60 transition-colors hover:bg-white/[0.1] hover:text-white/80 disabled:opacity-40"
                 >
                   <DownloadSimple weight="duotone" className="h-4 w-4" />
                   {exporting ? "Exporting..." : "Export PNG"}
                 </button>
                 <button
                   onClick={handleReset}
-                  className="flex w-full items-center justify-center gap-1.5 rounded-xl py-2 text-[11px] font-medium text-white/20 transition-colors hover:bg-white/[0.04] hover:text-white/40"
+                  className="flex items-center justify-center gap-1.5 rounded-xl px-4 py-2 text-[11px] font-medium text-white/20 transition-colors hover:bg-white/[0.04] hover:text-white/40 md:w-full md:px-0"
                 >
                   <ArrowCounterClockwise
                     weight="duotone"
                     className="h-3.5 w-3.5"
                   />
-                  Upload New
+                  <span className="hidden md:inline">Upload New</span>
+                  <span className="md:hidden">New</span>
                 </button>
               </div>
             </div>
