@@ -369,15 +369,15 @@ function PhoneFrame({
     <div
       className={`h-[600px] w-[290px] overflow-hidden rounded-[2.5rem] border-[6px] shadow-2xl ${
         isDark
-          ? "border-[#2a2a2e] shadow-black/60"
+          ? "border-[#1a1a1e] shadow-black/60"
           : "border-[#e0e0e4] shadow-black/20"
       }`}
     >
       <div
-        className={`relative h-full overflow-hidden ${isDark ? "bg-[#1a1a1e]" : "bg-[#ffffff]"}`}
+        className={`relative h-full overflow-hidden ${isDark ? "bg-[#000000]" : "bg-[#ffffff]"}`}
       >
         <div
-          className={`absolute left-1/2 top-0 z-10 h-6 w-28 -translate-x-1/2 rounded-b-2xl ${isDark ? "bg-[#1a1a1e]" : "bg-[#d4d4d8]"}`}
+          className={`absolute left-1/2 top-0 z-10 h-6 w-28 -translate-x-1/2 rounded-b-2xl ${isDark ? "bg-[#000000]" : "bg-[#d4d4d8]"}`}
         />
         <DraggableImage
           src={src}
@@ -702,7 +702,11 @@ export function ScreenshotTool() {
         const border = frame === "phone" ? 6 : 8;
 
         // Device border
-        ctx.fillStyle = isDark ? "#2a2a2e" : "#e0e0e4";
+        ctx.fillStyle = isDark
+          ? frame === "phone"
+            ? "#1a1a1e"
+            : "#2a2a2e"
+          : "#e0e0e4";
         ctx.fillRect(fx, fy, fs.w, fs.h);
 
         // Inner screen
@@ -717,7 +721,7 @@ export function ScreenshotTool() {
         innerPath.roundRect(innerX, innerY, innerW, innerH, innerRadius);
         ctx.clip(innerPath);
 
-        ctx.fillStyle = screenBg;
+        ctx.fillStyle = isDark && frame === "phone" ? "#000000" : screenBg;
         ctx.fillRect(innerX, innerY, innerW, innerH);
 
         // Draw image
@@ -740,7 +744,7 @@ export function ScreenshotTool() {
 
         // Phone notch
         if (frame === "phone") {
-          ctx.fillStyle = isDark ? "#1a1a1e" : "#d4d4d8";
+          ctx.fillStyle = isDark ? "#000000" : "#d4d4d8";
           const notchW = 112;
           const notchH = 24;
           const notchPath = new Path2D();
