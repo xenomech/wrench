@@ -1,12 +1,22 @@
-'use client';
+"use client";
 
-import { Browser } from '@phosphor-icons/react';
-import { ToolLayout } from '@/components/tool-layout';
+import { Browser, DeviceMobile } from "@phosphor-icons/react";
+import { ToolLayout } from "@/components/tool-layout";
 
 const tools = [
-  { id: 'favicon', label: 'Favicon', href: '/assets', icon: Browser },
+  { id: "favicon", label: "Favicon", href: "/assets", icon: Browser },
+  {
+    id: "screenshots",
+    label: "Screenshots",
+    href: "/assets/screenshots",
+    icon: DeviceMobile,
+  },
 ];
 
-export default function AssetsLayout({ children }: { children: React.ReactNode }) {
+export default function AssetsLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return <ToolLayout tools={tools}>{children}</ToolLayout>;
 }
